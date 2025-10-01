@@ -1,0 +1,26 @@
+import "io"
+
+func get_value() {
+    var x = 1 + 2 * 3.5;
+    var y = 1 + 2.5 * 3;
+    var z = 1.5 + 2 * 3;
+    var w = 1 + 2 * 3;
+
+    return x + y + z + w;
+}
+
+func a() {
+    return get_value();
+}
+
+func b(): i32 {
+    return get_value();
+}
+
+func c(): f64 {
+    return get_value();
+}
+
+func main() {
+    println(a() * b() * c());
+}

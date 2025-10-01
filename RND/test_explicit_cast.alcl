@@ -1,0 +1,10 @@
+import "io"
+
+func get_value(): f32 {
+    return 1 + 2 * 3;
+}
+
+func main() {
+    var x = (i32)4.25 + get_value();
+    println(x);
+}

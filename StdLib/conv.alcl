@@ -1,0 +1,47 @@
+@include("stdio.h")
+@include("stdlib.h")
+func i32_to_cstr(x: i32): c_str {
+    __inject('char tmp[32];
+    int len = snprintf(tmp, sizeof(tmp), "%d", x);
+    char* result = (char*)malloc(len + 1);
+    if (result) {
+        snprintf(result, len + 1, "%d", x);
+    }
+    return result');
+}
+
+@include("stdio.h")
+@include("stdlib.h")
+func f32_to_cstr(x: f32): c_str {
+    __inject('char tmp[64];
+    int len = snprintf(tmp, sizeof(tmp), "%g", x);
+    char* result = (char*)malloc(len + 1);
+    if (result) {
+        snprintf(result, len + 1, "%g", x);
+    }
+    return result');
+}
+
+@include("stdio.h")
+@include("stdlib.h")
+func f64_to_cstr(x: f64): c_str {
+    __inject('char tmp[128];
+    int len = snprintf(tmp, sizeof(tmp), "%lg", x);
+    char* result = (char*)malloc(len + 1);
+    if (result) {
+        snprintf(result, len + 1, "%lg", x);
+    }
+    return result');
+}
+
+@include("stdio.h")
+@include("stdlib.h")
+@include("string.h")
+func bool_to_cstr(x: bool): c_str {
+    __inject('const char* str = x == 1 ? "true" : "false";
+    char* result = (char*)malloc(strlen(str) + 1);
+    if (result) {
+        strcpy(result, str);
+    }
+    return result');
+}

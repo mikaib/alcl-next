@@ -1,0 +1,39 @@
+package alcl.tokenizer;
+
+enum TokenKind {
+    None;
+    At;
+    Identifier;
+    IntegerLiteral;
+    FloatLiteral;
+    StringLiteral;
+    BooleanLiteral;
+    LeftParen;
+    RightParen;
+    LeftBracket;
+    RightBracket;
+    LeftBrace;
+    RightBrace;
+    Comma;
+    Dot;
+    Minus;
+    Plus;
+    Semicolon;
+    Slash;
+    Star;
+    Percent;
+    Question;
+    Assign;
+    Equal;
+    Colon;
+    Arrow;
+    Spread;
+    And;
+    Or;
+    Less;
+    Greater;
+    LessEqual;
+    GreaterEqual;
+    NotEqual;
+    Not;
+}

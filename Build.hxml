@@ -1,0 +1,9 @@
+# defines
+-D analyzer-optimize
+
+# location
+-cp Source
+-main Main
+
+# output
+-hl Build/out.hl

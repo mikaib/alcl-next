@@ -1,0 +1,202 @@
+{
+  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+  "name": "ALCL",
+  "patterns": [
+    { "include": "#meta" },
+    { "include": "#variable-declaration" },
+    { "include": "#casts" },
+    { "include": "#keywords" },
+    { "include": "#strings" },
+    { "include": "#functions" },
+    { "include": "#function-calls" },
+    { "include": "#variables" },
+    { "include": "#operators" },
+    { "include": "#punctuation" },
+    { "include": "#identifiers" },
+    { "include": "#comments" }
+  ],
+  "repository": {
+    "meta": {
+      "patterns": [
+        {
+          "name": "meta.annotation.alcl",
+          "begin": "@(extern|export)",
+          "beginCaptures": {
+            "1": { "name": "storage.modifier.metadata.alcl" }
+          },
+          "end": "\\)",
+          "patterns": [
+            {
+              "name": "meta.annotation.parameters.alcl",
+              "match": "\\(*([a-zA-Z_][a-zA-Z0-9_]*)\\s*:\\s*([a-zA-Z_][a-zA-Z0-9_]*(?:<[a-zA-Z_][a-zA-Z0-9_<>, ]+>)?(?:\\[[^\\]]+\\])?)",
+              "captures": {
+                "1": { "name": "variable.parameter.alcl" },
+                "2": { "name": "entity.name.class.alcl" }
+              }
+            }
+          ]
+        },
+        {
+          "name": "meta.annotation.define.alcl",
+          "match": "@(define|include)",
+          "captures": {
+            "1": { "name": "storage.modifier.metadata.alcl" }
+          }
+        },
+        {
+          "name": "keyword.import.alcl",
+          "match": "\\bimport\\b"
+        }
+      ]
+    },
+    "keywords": {
+      "patterns": [
+        {
+          "name": "keyword.control.alcl",
+          "match": "\\b(while|for|return|break|continue|if|else|in|of|as|end|inline|defer)\\b"
+        }
+      ]
+    },
+    "variable-declaration": {
+      "patterns": [
+        {
+          "name": "meta.variable.declaration.alcl",
+          "match": "\\b(var)\\s+([a-zA-Z_][a-zA-Z0-9_]*)(?::\\s*([a-zA-Z_][a-zA-Z0-9_]*(?:<[a-zA-Z_][a-zA-Z0-9_<>, ]+>)?))?",
+          "captures": {
+            "1": { "name": "keyword.control.alcl" },
+            "2": { "name": "variable.other.alcl" },
+            "3": { "name": "entity.name.class.alcl" }
+          }
+        }
+      ]
+    },
+    "strings": {
+      "name": "string.quoted.double.alcl",
+      "begin": "\"",
+      "end": "\"",
+      "patterns": [
+        {
+          "name": "constant.character.escape.alcl",
+          "match": "\\\\."
+        }
+      ]
+    },
+    "function-calls": {
+      "patterns": [
+        {
+          "name": "meta.function-call.alcl",
+          "match": "\\b([a-zA-Z_][a-zA-Z0-9_]*)\\s*\\(",
+          "captures": {
+            "1": { "name": "entity.name.function.alcl" }
+          }
+        }
+      ]
+    },
+    "functions": {
+      "patterns": [
+        {
+          "name": "meta.function.declaration.alcl",
+          "begin": "\\b(func)\\s+([a-zA-Z_][a-zA-Z0-9_]*)(?:<([^>]+)>)?",
+          "beginCaptures": {
+            "1": { "name": "keyword.control.alcl" },
+            "2": { "name": "entity.name.function.alcl" },
+            "3": { "name": "entity.name.type.alcl" }
+          },
+          "end": "\\{|$",
+          "patterns": [
+            {
+              "name": "meta.function.parameters.alcl",
+              "begin": "\\(",
+              "end": "\\)",
+              "patterns": [
+                {
+                  "match": "([a-zA-Z_][a-zA-Z0-9_]*)(\\s*:\\s*([a-zA-Z_][a-zA-Z0-9_]*(?:<[a-zA-Z_][a-zA-Z0-9_<>, ]+>)?))?",
+                  "captures": {
+                    "1": { "name": "variable.parameter.alcl" },
+                    "3": { "name": "entity.name.class.alcl" }
+                  }
+                },
+                {
+                  "name": "punctuation.separator.parameter.alcl",
+                  "match": ","
+                }
+              ]
+            },
+            {
+              "name": "meta.function.return-type.alcl",
+              "match": ":\\s*([a-zA-Z_][a-zA-Z0-9_]*(?:<[a-zA-Z_][a-zA-Z0-9_<>, ]+>)?)",
+              "captures": {
+                "1": { "name": "entity.name.class.alcl" }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "variables": {
+      "patterns": [
+        {
+          "name": "constant.numeric.alcl",
+          "match": "\\b\\d+\\b"
+        },
+        {
+          "name": "constant.language.alcl",
+          "match": "\\b(true|false|null)\\b"
+        }
+      ]
+    },
+    "operators": {
+      "patterns": [
+        {
+          "name": "keyword.operator.assignment.alcl",
+          "match": "(\\+=|-=|\\*=|/=|%=|=)"
+        }
+      ]
+    },
+    "identifiers": {
+      "patterns": [
+        {
+          "name": "variable.other.local.alcl",
+          "match": "\\b[a-zA-Z_][a-zA-Z0-9_]*\\b"
+        }
+      ]
+    },
+    "punctuation": {
+      "patterns": [
+        {
+          "name": "punctuation.definition.bracket.alcl",
+          "match": "[\\{\\}\\[\\]\\(\\)]"
+        },
+        {
+          "name": "punctuation.separator.alcl",
+          "match": "[,;]"
+        },
+        {
+          "name": "punctuation.definition.generic.alcl",
+          "match": "[<>]"
+        }
+      ]
+    },
+    "comments": {
+      "patterns": [
+        {
+          "name": "comment.line.alcl",
+          "match": "//.*"
+        }
+      ]
+    },
+    "casts": {
+      "patterns": [
+        {
+          "name": "meta.cast.alcl",
+          "match": "\\(([a-zA-Z_][a-zA-Z0-9_]*(?:<[a-zA-Z_][a-zA-Z0-9_<>, ]+>)?)\\)(?=\\s*(?:[a-zA-Z_][a-zA-Z0-9_]*|\\d+|\\())",
+          "captures": {
+            "0": { "name": "meta.cast.parentheses.alcl" },
+            "1": { "name": "entity.name.class.cast.alcl" }
+          }
+        }
+      ]
+    }
+  },
+  "scopeName": "source.alcl"
+}
