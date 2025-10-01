@@ -15,6 +15,9 @@ class AnalyzerType {
     public static var TInt(get, never): AnalyzerType;
     private static function get_TInt(): AnalyzerType return AnalyzerType.ofString("i32");
 
+    public static var TLong(get, never): AnalyzerType;
+    private static function get_TLong(): AnalyzerType return AnalyzerType.ofString("i64");
+
     public static var TFloat(get, never): AnalyzerType;
     private static function get_TFloat(): AnalyzerType return AnalyzerType.ofString("f32");
 
@@ -80,6 +83,8 @@ class AnalyzerType {
         switch (baseType) {
             case "i32":
                 return "int";
+            case "i64":
+                return "long";
             case "f32":
                 return "float";
             case "f64":
@@ -105,6 +110,8 @@ class AnalyzerType {
         switch (baseType) {
             case "i32":
                 return 4;
+            case "i64":
+                return 8;
             case "f32":
                 return 4;
             case "f64":
@@ -127,7 +134,7 @@ class AnalyzerType {
             return fallbackType.isNumeric();
         }
 
-        return baseType == "i32" || baseType == "f32" || baseType == "f64";
+        return baseType == "i32" || baseType == "i64" || baseType == "f32" || baseType == "f64";
     }
 
     public function copy(): AnalyzerType {

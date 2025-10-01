@@ -5,7 +5,13 @@ class AnalyzerCastImpl {
     private static final narrowingConversionMap: Map<String, Bool> = [
         narrowingKey(AnalyzerType.TDouble, AnalyzerType.TFloat) => true,
         narrowingKey(AnalyzerType.TDouble, AnalyzerType.TInt) => true,
-        narrowingKey(AnalyzerType.TFloat, AnalyzerType.TInt) => true
+        narrowingKey(AnalyzerType.TDouble, AnalyzerType.TLong) => true,
+        narrowingKey(AnalyzerType.TFloat, AnalyzerType.TInt) => true,
+        narrowingKey(AnalyzerType.TFloat, AnalyzerType.TLong) => true,
+        narrowingKey(AnalyzerType.TInt, AnalyzerType.TFloat) => true,
+        narrowingKey(AnalyzerType.TLong, AnalyzerType.TInt) => true,
+        narrowingKey(AnalyzerType.TLong, AnalyzerType.TFloat) => true,
+        narrowingKey(AnalyzerType.TLong, AnalyzerType.TDouble) => true,
     ];
 
     private static function narrowingKey(have: AnalyzerType, want: AnalyzerType): String {

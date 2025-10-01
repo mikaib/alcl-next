@@ -1,37 +1,7 @@
 import "io"
 
-func sumA(x: i32, y): i32 {
-    return x + (i32)y;
-}
-
-func sumB(x: i32, y) {
-    return x + (i32)y;
-}
-
-func sumC(x: i32, y): i32 {
-    return x + y;
-}
-
-func sumD(x: i32, y) {
-    return x + y;
-}
-
-func sumE(x, y): i32 {
-    return x + y;
-}
-
-func sumF(x, y) {
-    return x + y;
-}
-
 func main() {
-    var v = (c_str)(f64)(i32)5.5;
-    sumA(5.5, 10.5);
-    sumB(5.5, 10.5);
-    sumC(5.5, 10.5);
-    sumD(5.5, 10.5);
-    sumE(5.5, 10.5);
-    sumF(5.5, 10.5);
-
-    println(v);
+    println("Hello, World!");
 }
+
+main();

@@ -2,8 +2,7 @@
 <module type="HAXE_MODULE" version="4">
   <component name="HaxeModuleSettingsStorage">
     <option name="buildConfig" value="1" />
-    <option name="haxeTarget" value="HashLink" />
-    <option name="hxmlPath" value="$MODULE_DIR$/build.hxml" />
+    <option name="hxmlPath" value="$MODULE_DIR$/Build.hxml" />
     <option name="outputFolder" value="$MODULE_DIR$/out/production/ALCL" />
   </component>
   <component name="NewModuleRootManager" inherit-compiler-output="true">

@@ -3,6 +3,7 @@ import alcl.cgen.GeneratorContext;
 import alcl.cgen.GeneratorBuffer;
 import haxe.io.Path;
 import haxe.CallStack;
+import alcl.eval.EvalContext;
 
 using alcl.ErrorUtil;
 using alcl.WarningUtil;
@@ -21,6 +22,10 @@ class Context {
 
     public inline function module(module: String): Module {
         return moduleResolver.getOrCreateModule(module);
+    }
+
+    public inline function eval(module: Module): EvalContext {
+        return new EvalContext(module.typedAst, module);
     }
 
     public inline function main(): Module {

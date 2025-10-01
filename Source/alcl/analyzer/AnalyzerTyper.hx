@@ -100,8 +100,11 @@ class AnalyzerTyper {
                 validateAst(node.children);
 
                 var from = getType(node.children[0], node.validationScope);
-                var path = solver.findCast(from, to);
+                if (from.eq(to)) {
+                    return;
+                }
 
+                var path = solver.findCast(from, to);
                 if (path == null || path.length == 0) {
                     context.emitError(module, AnalyzerInvalidCast(from, to, node.info));
                     return;

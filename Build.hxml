@@ -5,5 +5,8 @@
 -cp Source
 -main Main
 
+# eval std
+--macro include('alcl.eval.std')
+
 # output
 -hl Build/out.hl

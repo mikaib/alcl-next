@@ -15,10 +15,16 @@ class AnalyzerSolver {
         // numerical conversions
         addCastMethod({ from: AnalyzerType.TInt, to: AnalyzerType.TFloat, handler: AnalyzerCastImpl.numericConv });
         addCastMethod({ from: AnalyzerType.TInt, to: AnalyzerType.TDouble, handler: AnalyzerCastImpl.numericConv });
+        addCastMethod({ from: AnalyzerType.TInt, to: AnalyzerType.TLong, handler: AnalyzerCastImpl.numericConv });
         addCastMethod({ from: AnalyzerType.TFloat, to: AnalyzerType.TDouble, handler: AnalyzerCastImpl.numericConv });
+        addCastMethod({ from: AnalyzerType.TFloat, to: AnalyzerType.TInt, handler: AnalyzerCastImpl.numericConv });
+        addCastMethod({ from: AnalyzerType.TFloat, to: AnalyzerType.TLong, handler: AnalyzerCastImpl.numericConv });
         addCastMethod({ from: AnalyzerType.TDouble, to: AnalyzerType.TFloat, handler: AnalyzerCastImpl.numericConv });
         addCastMethod({ from: AnalyzerType.TDouble, to: AnalyzerType.TInt, handler: AnalyzerCastImpl.numericConv });
-        addCastMethod({ from: AnalyzerType.TFloat, to: AnalyzerType.TInt, handler: AnalyzerCastImpl.numericConv });
+        addCastMethod({ from: AnalyzerType.TDouble, to: AnalyzerType.TLong, handler: AnalyzerCastImpl.numericConv });
+        addCastMethod({ from: AnalyzerType.TLong, to: AnalyzerType.TInt, handler: AnalyzerCastImpl.numericConv });
+        addCastMethod({ from: AnalyzerType.TLong, to: AnalyzerType.TFloat, handler: AnalyzerCastImpl.numericConv });
+        addCastMethod({ from: AnalyzerType.TLong, to: AnalyzerType.TDouble, handler: AnalyzerCastImpl.numericConv });
 
         // string <-> cstring conversions
         addCastMethod({ from: AnalyzerType.TString, to: AnalyzerType.TCString, handler: AnalyzerCastImpl.implicitConv });
@@ -26,6 +32,7 @@ class AnalyzerSolver {
 
         // x -> cstring conversions
         addCastMethod({ from: AnalyzerType.TInt, to: AnalyzerType.TCString, handler: AnalyzerCastImpl.createRuntimeConv("i32_to_cstr", "conv") });
+        addCastMethod({ from: AnalyzerType.TLong, to: AnalyzerType.TCString, handler: AnalyzerCastImpl.createRuntimeConv("i64_to_cstr", "conv") });
         addCastMethod({ from: AnalyzerType.TFloat, to: AnalyzerType.TCString, handler: AnalyzerCastImpl.createRuntimeConv("f32_to_cstr", "conv") });
         addCastMethod({ from: AnalyzerType.TDouble, to: AnalyzerType.TCString, handler: AnalyzerCastImpl.createRuntimeConv("f64_to_cstr", "conv") });
         addCastMethod({ from: AnalyzerType.TBool, to: AnalyzerType.TCString, handler: AnalyzerCastImpl.createRuntimeConv("bool_to_cstr", "conv") });
@@ -146,6 +153,7 @@ class AnalyzerSolver {
     }
 
     public function unify(c: AnalyzerConstraint): Bool {
+
         // if both are unknown, we can't unify
         if (c.want.type.isUnknown() && c.have.type.isUnknown()) {
             return false;
