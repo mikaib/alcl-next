@@ -7,7 +7,8 @@ import alcl.analyzer.AnalyzerVariable;
 enum NodeKind {
     // func
     FunctionDecl(desc: AnalyzerFunction);
-    FunctionCall(name: String, remappedName: String);
+    FunctionCall(name: String, remappedName: String, returnType: AnalyzerType);
+    MacroFunctionCall(name: String, remappedName: String, returnType: AnalyzerType);
     Return;
 
     // lit

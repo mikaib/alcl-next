@@ -6,6 +6,7 @@ import alcl.cgen.GeneratorContext;
 import alcl.analyzer.AnalyzerFunction;
 import alcl.analyzer.AnalyzerTyper;
 import alcl.parser.AST;
+import alcl.eval.EvalContext;
 
 @:structInit
 class Module {
@@ -14,6 +15,7 @@ class Module {
     public var tokenizer: Tokenizer;
     public var parser: Parser;
     public var typer: AnalyzerTyper;
+    public var evaluator: EvalContext;
     public var typedAst: AST;
     public var functions: Array<AnalyzerFunction> = [];
     public var imports: Array<Module> = [];
@@ -33,7 +35,6 @@ class Module {
     }
 
     public function getPathHeader(): String {
-
         return './${getProjectPrefix() + name}.h';
     }
 
@@ -43,6 +44,15 @@ class Module {
 
     public function getSafeName(v: String = ""): String {
         return getProjectPrefix() + StringTools.replace(name, "/", "_").toLowerCase() + (if (v != "") "_" + v else "");
+    }
+
+    public function getEvaluatorSafe(): EvalContext {
+        if (evaluator == null) {
+            evaluator = new EvalContext(typedAst, this);
+            evaluator.run();
+        }
+
+        return evaluator;
     }
 
     public function addImport(moduleName: String): Void {

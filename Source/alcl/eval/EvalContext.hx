@@ -4,6 +4,8 @@ import alcl.parser.AST;
 import alcl.Module;
 import alcl.parser.Node;
 import alcl.analyzer.AnalyzerType;
+import alcl.parser.NodeKind;
+import alcl.eval.std.IEvalStd.IEvalStdRuntime;
 
 class EvalContext {
 
@@ -26,6 +28,12 @@ class EvalContext {
                 functions: baseScope.functions.concat(c.getExports().functions),
                 variables: baseScope.variables.concat(c.getExports().variables)
             };
+        }
+
+        var funcList = IEvalStdRuntime.getFunctionList();
+        var toPatch = baseScope.functions.filter(f -> !funcList.contains(f.desc.name));
+        for (f in toPatch) {
+            f.patchedImpl = IEvalStdRuntime.getFunction(f.desc.remappedName);
         }
     }
 
@@ -107,7 +115,8 @@ class EvalContext {
                 var decl: EvalFunction = {
                     desc: desc,
                     scope: scope.copy(),
-                    body: node.children
+                    body: node.children,
+                    patchedImpl: null
                 };
 
                 scope.functions.push(decl);
@@ -131,25 +140,11 @@ class EvalContext {
 
                 return v.value;
 
-            case FunctionCall(name, remappedName):
-                var func = scope.findFunction(name);
-                if (func == null) {
-                    throw 'Unknown function: ' + name;
-                }
+            case MacroFunctionCall(name, remappedName, returnType):
+                return call(name, node.children, scope);
 
-                var localScope = func.scope.copy();
-                for (i in 0...func.desc.parameters.length) {
-                    var param = func.desc.parameters[i];
-                    var argNode = node.children[i];
-                    localScope.variables.push({
-                        name: param.name,
-                        value: execNode(argNode, scope)
-                    });
-                }
-
-                execBody(func.body, localScope);
-
-                return localScope.returnValue;
+            case FunctionCall(name, remappedName, returnType):
+                return call(name, node.children, scope);
 
             case Return:
                 return scope.returnValue = execNode(node.children[0], scope);
@@ -160,6 +155,59 @@ class EvalContext {
             default:
                 return { type: AnalyzerType.TVoid, value: 0 };
         }
+    }
+
+    public function call(name: String, args: AST, scope: EvalScope): EvalValue {
+        var func = scope.findFunction(name);
+        if (func == null) {
+            throw 'Unknown function: ' + name;
+        }
+
+        var localScope = func.scope.copy();
+        for (i in 0...func.desc.parameters.length) {
+            var param = func.desc.parameters[i];
+            var argNode = args[i];
+            localScope.variables.push({
+                name: param.name,
+                value: execNode(argNode, scope)
+            });
+        }
+
+        if (func.patchedImpl != null) {
+            return Reflect.callMethod(this, func.patchedImpl, [this, localScope.variables.map(v -> v.value)]);
+        } else {
+            execBody(func.body, localScope);
+            return localScope.returnValue;
+        }
+    }
+
+    public function toLiteral(value: EvalValue): NodeKind {
+        if (value.type.eq(AnalyzerType.TInt) || value.type.eq(AnalyzerType.TLong)) {
+            return NodeKind.IntegerLiteralNode(Std.string(Std.int(value.value)));
+        }
+
+        if (value.type.eq(AnalyzerType.TFloat) || value.type.eq(AnalyzerType.TDouble)) {
+            var v = Std.string(value.value);
+            if (!StringTools.contains(v, ".")) {
+                v += ".0";
+            }
+
+            return NodeKind.FloatLiteralNode(v);
+        }
+
+        if (value.type.eq(AnalyzerType.TString) || value.type.eq(AnalyzerType.TCString)) {
+            return NodeKind.StringLiteralNode(Std.string(value.value));
+        }
+
+        if (value.type.eq(AnalyzerType.TBool)) {
+            return NodeKind.BooleanLiteralNode(if (value.value) "true" else "false");
+        }
+
+        if (value.type.eq(AnalyzerType.TVoid)) {
+            return NodeKind.CCode("");
+        }
+
+        throw "Incompatible literal type: " + value.type;
     }
 
 }

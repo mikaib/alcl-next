@@ -48,6 +48,10 @@ class GeneratorContext {
         if (includeCount != 0) buf.println('');
 
         for (func in module.functions) {
+            if (func.metas.filter(m -> m.kind == Macro).length > 0) {
+                continue;
+            }
+
             var retType = func.returnType.toCTypeString();
             var params = func.parameters.map(p -> p.type.toCTypeString() + ' ' + p.name).join(', ');
             buf.println(retType + ' ' + func.remappedName + '(' + params + ');');

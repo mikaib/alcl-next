@@ -12,6 +12,18 @@ func i32_to_cstr(x: i32): c_str {
 
 @include("stdio.h")
 @include("stdlib.h")
+func i64_to_cstr(x: i64): c_str {
+    __inject('char tmp[32];
+    int len = snprintf(tmp, sizeof(tmp), "%lld", x);
+    char* result = (char*)malloc(len + 1);
+    if (result) {
+        snprintf(result, len + 1, "%lld", x);
+    }
+    return result');
+}
+
+@include("stdio.h")
+@include("stdlib.h")
 func f32_to_cstr(x: f32): c_str {
     __inject('char tmp[64];
     int len = snprintf(tmp, sizeof(tmp), "%g", x);

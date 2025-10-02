@@ -2,6 +2,7 @@ package alcl.parser.paths;
 
 import alcl.tokenizer.TokenKind;
 import alcl.parser.ParserPath;
+import alcl.analyzer.AnalyzerType;
 
 class FunctionCallPath extends ParserPath {
 
@@ -31,7 +32,7 @@ class FunctionCallPath extends ParserPath {
 
         var info = getCurrentInfo();
         var node: Node = {
-            kind: FunctionCall(name.value, name.value),
+            kind: FunctionCall(name.value, name.value, AnalyzerType.TDependant),
             info: info,
             children: args
         };

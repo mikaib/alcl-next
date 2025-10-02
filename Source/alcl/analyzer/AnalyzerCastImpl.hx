@@ -25,7 +25,10 @@ class AnalyzerCastImpl {
     public static function numericConv(constraint: AnalyzerConstraint, solver: AnalyzerSolver): Bool {
         if (isNarrowingConversion(constraint.have.type, constraint.want.type)) {
             if (constraint.want.node != null && constraint.have.node != null) {
-                return numericConv(constraint.flipped(), solver);
+                var flipped = constraint.flipped();
+                if (!isNarrowingConversion(flipped.have.type, flipped.want.type)) {
+                    return numericConv(flipped, solver);
+                }
             }
 
             if (!constraint.explicit) solver.typer.context.emitWarning(
@@ -92,7 +95,7 @@ class AnalyzerCastImpl {
             constraint.have.type.set(constraint.want.type);
 
             constraint.have.node.wrap({
-                kind: FunctionCall(fn.name, fn.remappedName),
+                kind: FunctionCall(fn.name, fn.remappedName, fn.returnType.copy()), // TODO: check if the copy() will cause issues...
                 children: [],
                 info: constraint.have.node.info
             });

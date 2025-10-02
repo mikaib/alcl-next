@@ -1,15 +1,10 @@
 #include "./alcl_main.h"
-
-void alcl_main_foo(int x) {
-}
-
-void alcl_main_bar(float x) {
-}
+#include "./alcl_io.h"
+#include "./alcl_conv.h"
 
 void alcl_main_main() {
-    long z = ((long)3);
-    alcl_main_foo(((int)z));
-    alcl_main_bar(((float)z));
+    alcl_io_println("ran during runtime!");
+    alcl_io_println(alcl_conv_i64_to_cstr(25));
 }
 
 int main(int argc, char** argv) {

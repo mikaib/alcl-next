@@ -1,7 +1,12 @@
 import "io"
 
-func main() {
-    println("Hello, World!");
+macro func squared(x: i64) {
+    println("ran during compiletime!");
+    println(x);
+    return x * x;
 }
 
-main();
+func main() {
+    println("ran during runtime!");
+    println(squared(5.0));
+}

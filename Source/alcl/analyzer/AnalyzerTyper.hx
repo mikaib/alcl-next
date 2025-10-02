@@ -69,14 +69,11 @@ class AnalyzerTyper {
             case BinaryOperation(op, resType):
                 return resType;
 
-            case FunctionCall(name, remappedName):
-                var f = scope.findFunction(name);
-                if (f == null) {
-                    context.emitError(module, AnalyzerUnknownFunction(name, node.info));
-                }
+            case MacroFunctionCall(name, remappedName,  returnType):
+               return returnType;
 
-                var tmp = AnalyzerType.TUnknown;
-                return solver.nodeMustMatchTypeVerbose(f.returnType, tmp, node, scope);
+            case FunctionCall(name, remappedName, returnType):
+                return returnType;
 
             case CCast(type):
                 return type.copy();
@@ -149,7 +146,7 @@ class AnalyzerTyper {
 
                 solver.nodeMustMatchType(desc.type, node.children[0], scope);
 
-            case FunctionCall(name, remappedName):
+            case FunctionCall(name, remappedName,  returnType):
                 var f = scope.findFunction(name);
                 if (f == null) {
                     context.emitError(module, AnalyzerUnknownFunction(name, node.info));
@@ -170,7 +167,15 @@ class AnalyzerTyper {
                     solver.nodeMustMatchTypeVerbose(declParam.type, tmp, callParam, scope);
                 }
 
-                node.kind = NodeKind.FunctionCall(name, f.remappedName);
+                var tmp = AnalyzerType.TUnknown;
+                solver.nodeMustMatchTypeVerboseRes(tmp, f.returnType, returnType, node, scope);
+
+                if (f.metas.filter(m -> m.kind == Macro).length > 0) {
+                    node.kind = NodeKind.MacroFunctionCall(name, f.remappedName, returnType);
+                    return;
+                }
+
+                node.kind = NodeKind.FunctionCall(name, f.remappedName, returnType);
 
             case BinaryOperation(op, resType):
                 analyseAst(node.children, scope);

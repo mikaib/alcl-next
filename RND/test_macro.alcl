@@ -1,0 +1,12 @@
+import "io"
+
+macro func squared(x) {
+    println("ran during compiletime!");
+    println(x);
+    return x * x;
+}
+
+func main() {
+    println("ran during runtime!");
+    var x = 2.0 * squared(5);
+}

@@ -8,4 +8,5 @@ class EvalFunction {
     public var desc: AnalyzerFunction;
     public var scope: EvalScope;
     public var body: AST;
+    public var patchedImpl: Dynamic;
 }

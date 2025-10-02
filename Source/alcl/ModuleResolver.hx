@@ -6,6 +6,8 @@ import haxe.io.Path;
 import sys.FileSystem;
 import sys.io.File;
 import alcl.analyzer.AnalyzerTyper;
+import alcl.eval.EvalContext;
+import alcl.macro.MacroPass;
 
 class ModuleResolver {
 
@@ -58,7 +60,8 @@ class ModuleResolver {
             typer: null,
             tokenizer: null,
             parser: null,
-            typedAst: null
+            typedAst: null,
+            evaluator: null
         };
 
         moduleObj.tokenizer = new Tokenizer(moduleObj, context, readContent(module), context.options.defines);
@@ -71,6 +74,8 @@ class ModuleResolver {
 
         moduleObj.typedAst = analyzed;
         cache.set(moduleObj.name, moduleObj);
+
+        MacroPass.processBody(moduleObj.typedAst, moduleObj);
 
         return moduleObj;
     }

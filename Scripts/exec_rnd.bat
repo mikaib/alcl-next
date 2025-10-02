@@ -1,0 +1,1 @@
+haxe Build.hxml && hl ./Build/out.hl && cmake ./out -B ./out/build && cmake --build ./out/build && start /wait /b ./out/build/Debug/alcl.exe

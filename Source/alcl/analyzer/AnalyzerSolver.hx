@@ -153,7 +153,6 @@ class AnalyzerSolver {
     }
 
     public function unify(c: AnalyzerConstraint): Bool {
-
         // if both are unknown, we can't unify
         if (c.want.type.isUnknown() && c.have.type.isUnknown()) {
             return false;

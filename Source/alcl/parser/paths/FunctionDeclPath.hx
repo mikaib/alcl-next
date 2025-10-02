@@ -10,10 +10,10 @@ import alcl.analyzer.AnalyzerFunction;
 class FunctionDeclPath extends ParserPath {
 
     override public function onRun(): Void {
+        var isMacro = ifKindAndValue(Identifier, "macro");
         expectKindAndValue(Identifier, "func");
 
         var name = expectKind(Identifier);
-
         var paramTokens = expectBlock(LeftParen, RightParen);
         var paramPath = createPath(paramTokens);
         var params: Array<AnalyzerParameter> = [];
@@ -67,6 +67,13 @@ class FunctionDeclPath extends ParserPath {
                     }
                 case _: null;
             }
+        }
+
+        if (isMacro) {
+            metas.push({
+                kind: Macro,
+                params: []
+            });
         }
 
         var func: AnalyzerFunction = {

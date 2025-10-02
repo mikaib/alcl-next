@@ -46,18 +46,7 @@ class Main {
         });
 
         // ensure main module is loaded
-        var module = context.main();
-
-        // eval it
-        var ev = context.eval(module);
-        var res = ev.run();
-
-        // print results
-        Sys.println('\n' + module.typedAst.toString());
-        Sys.println('Result (${res.type.toHumanReadableString()}): ${res.value}');
-
-        // exit early
-        return;
+        context.main();
 
         // create output dir
         var output = context.options.outputDirectory;

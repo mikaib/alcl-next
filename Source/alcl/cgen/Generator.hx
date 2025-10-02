@@ -71,7 +71,7 @@ class Generator {
         switch (node.kind) {
             case BinaryOperation(op, resType):
                 return printBinaryOperation(node, op);
-            case FunctionCall(name, remappedName):
+            case FunctionCall(name, remappedName, returnType):
                 return printFunctionCall(node, name, remappedName);
             case CCode(code):
                 return code;
@@ -95,6 +95,10 @@ class Generator {
     }
 
     private function printFunctionDecl(node: Node, buffer: GeneratorBuffer, indentLevel: Int, desc: AnalyzerFunction): Void {
+        if (desc.metas.filter(m -> m.kind == Macro).length > 0) {
+            return;
+        }
+
         var params = [];
         for (param in desc.parameters) {
             params.push('${param.type.toCTypeString()} ${param.name}');
