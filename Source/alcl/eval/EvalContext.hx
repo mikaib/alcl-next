@@ -97,12 +97,7 @@ class EvalContext {
 
         switch (node.kind) {
             case Reify(mode):
-                switch (mode) {
-                    case AnalyzerReifyMode.ReifyExpression:
-                        return reifyValue(node.children[0], scope);
-                    case AnalyzerReifyMode.ReifyValue:
-                        return execNode(node.children[0], scope).value;
-                }
+                return reifyValue(node.children[0], scope);
             default:
                 // pass
         }
