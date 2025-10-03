@@ -25,4 +25,5 @@ enum Error {
     AnalyzerReturnOutsideFunction(info: NodeInfo);
     AnalyzerInvalidConversionFunction(name: String, info: NodeInfo);
     AnalyzerInvalidCast(from: AnalyzerType, to: AnalyzerType, info: NodeInfo);
+    AnalyzerReifyOutsideMacro(info: NodeInfo);
 }

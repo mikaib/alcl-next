@@ -379,6 +379,11 @@ class Tokenizer {
                         column++;
                     }
 
+                case '$':
+                    appendToken({ kind: TokenKind.Dollar, value: "$", info: { line: line, column: column, length: 1, position: initialPosition } });
+                    position++;
+                    column++;
+
                 case '"':
                     var start = position;
                     position++;

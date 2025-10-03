@@ -84,6 +84,12 @@ class AnalyzerTyper {
             case IdentifierNode(name, resType):
                 return resType;
 
+            case Reify(mode):
+                return getType(node.children[0], scope);
+
+            case Forward(fwNode):
+                return getType(fwNode, scope);
+
             default:
                 trace('Unhandled node kind - getType: ' + node);
         }
@@ -205,6 +211,14 @@ class AnalyzerTyper {
                 var tmp = AnalyzerType.TUnknown;
                 solver.nodeMustMatchType(tmp, node.children[0], scope);
                 solver.nodeMustMatchTypeVerbose(scope.currentFunction.returnType, tmp, node.children[0], scope);
+
+            case Reify(mode):
+                analyseAst(node.children, scope);
+
+                if (scope.currentFunction == null || scope.currentFunction.metas.filter(m -> m.kind == Macro).length == 0) {
+                    context.emitError(module, AnalyzerReifyOutsideMacro(node.info));
+                    return;
+                }
 
             default:
                 analyseAst(node.children, scope);

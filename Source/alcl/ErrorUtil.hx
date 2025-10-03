@@ -46,6 +46,8 @@ class ErrorUtil {
                 return { message: 'Invalid conversion function: $name, it must have one parameter!', pos: nodeInfoToString(info) };
             case AnalyzerInvalidCast(from, to, info):
                 return { message: 'Invalid cast: cannot cast from ${from.toHumanReadableString()} to ${to.toHumanReadableString()}', pos: nodeInfoToString(info) };
+            case AnalyzerReifyOutsideMacro(info):
+                return { message: 'Reification outside of macro', pos: nodeInfoToString(info) };
         }
 
         throw 'Unknown error type';

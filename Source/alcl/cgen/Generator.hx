@@ -55,6 +55,8 @@ class Generator {
 
     private function printStatement(node: Node, buffer: GeneratorBuffer, indentLevel: Int): Void {
         switch (node.kind) {
+            case Forward(fwNode):
+                return printStatement(fwNode, buffer, indentLevel);
             case FunctionDecl(desc):
                 printFunctionDecl(node, buffer, indentLevel, desc);
             case VarDecl(desc):
@@ -69,6 +71,10 @@ class Generator {
 
     private function printExpression(node: Node): String {
         switch (node.kind) {
+            case Forward(fwNode):
+                return printExpression(fwNode);
+            case Reify(mode):
+                return printExpression(node.children[0]);
             case BinaryOperation(op, resType):
                 return printBinaryOperation(node, op);
             case FunctionCall(name, remappedName, returnType):

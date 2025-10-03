@@ -12,6 +12,9 @@ class AnalyzerType {
     public static var TVoid(get, never): AnalyzerType;
     private static function get_TVoid(): AnalyzerType return AnalyzerType.ofString("void");
 
+    public static var TExpr(get, never): AnalyzerType;
+    private static function get_TExpr(): AnalyzerType return AnalyzerType.ofString("expr");
+
     public static var TInt(get, never): AnalyzerType;
     private static function get_TInt(): AnalyzerType return AnalyzerType.ofString("i32");
 

@@ -6,6 +6,7 @@ import alcl.parser.Node;
 import alcl.analyzer.AnalyzerType;
 import alcl.parser.NodeKind;
 import alcl.eval.std.IEvalStd.IEvalStdRuntime;
+import alcl.analyzer.AnalyzerReifyMode;
 
 class EvalContext {
 
@@ -66,6 +67,56 @@ class EvalContext {
             res = execNode(node, scope);
         }
         return res;
+    }
+
+    public function reifyExpr(node: Node, scope: EvalScope): Node {
+        node = node.copy();
+
+        switch (node.kind) {
+            case Reify(mode):
+                switch (mode) {
+                    case AnalyzerReifyMode.ReifyValue:
+                        var value = execNode(node.children[0], scope);
+                        return { kind: toLiteral(value), children: [], info: node.info };
+                    case AnalyzerReifyMode.ReifyExpression:
+                        return reifyExpr(node.children[0], scope);
+                }
+            default:
+                // pass
+        }
+
+        for (idx in 0...node.children.length) {
+            node.children[idx] = reifyExpr(node.children[idx], scope);
+        }
+
+        return node;
+    }
+
+    public function reifyValue(node: Node, scope: EvalScope): { node: Node, value: EvalValue } {
+        node = node.copy();
+
+        switch (node.kind) {
+            case Reify(mode):
+                switch (mode) {
+                    case AnalyzerReifyMode.ReifyExpression:
+                        return reifyValue(node.children[0], scope);
+                    case AnalyzerReifyMode.ReifyValue:
+                        return execNode(node.children[0], scope).value;
+                }
+            default:
+                // pass
+        }
+
+        for (idx in 0...node.children.length) {
+            node.children[idx] = reifyValue(node.children[idx], scope).node;
+        }
+
+        var res = execNode(node, scope);
+        if (res.type.eq(AnalyzerType.TExpr)) {
+            return reifyValue(res.value, scope);
+        }
+
+        return { node: node, value: res };
     }
 
     public function execNode(node: Node, scope: EvalScope): EvalValue {
@@ -146,6 +197,14 @@ class EvalContext {
             case FunctionCall(name, remappedName, returnType):
                 return call(name, node.children, scope);
 
+            case Reify(mode):
+                switch (mode){
+                    case AnalyzerReifyMode.ReifyValue:
+                        return reifyValue(node.children[0], scope).value;
+                    case AnalyzerReifyMode.ReifyExpression:
+                        return { type: AnalyzerType.TExpr, value: reifyExpr(node.children[0], scope) };
+                }
+
             case Return:
                 return scope.returnValue = execNode(node.children[0], scope);
 
@@ -205,6 +264,10 @@ class EvalContext {
 
         if (value.type.eq(AnalyzerType.TVoid)) {
             return NodeKind.CCode("");
+        }
+
+        if (value.type.eq(AnalyzerType.TExpr)) {
+            return NodeKind.Forward(value.value);
         }
 
         throw "Incompatible literal type: " + value.type;

@@ -1,12 +1,6 @@
 import "io"
 
-macro func squared(x: i64) {
-    println("ran during compiletime!");
-    println(x);
-    return x * x;
-}
-
 func main() {
-    println("ran during runtime!");
-    println(squared(5.0));
+    var x = e${5 + 5}; // should throw error, no context for reification as it's not in a macro
+    println(x);
 }

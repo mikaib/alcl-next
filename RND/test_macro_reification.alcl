@@ -1,0 +1,66 @@
+import "io"
+
+func identity(x) {
+    return x;
+}
+
+macro func squared_val(x) {
+    return v${x * x}; // v${...} is optional here
+}
+
+macro func squared_expr(x) {
+    return e${
+        v${x} * v${x}
+    };
+}
+
+macro func proxy_a(x) {
+    return squared_val(x);
+}
+
+macro func proxy_b(x) {
+    return squared_expr(x);
+}
+
+macro func proxy_c(x) {
+    return e${squared_val(v${x}) + squared_expr(v${x})};
+}
+
+macro func proxy_d(x) {
+    return squared_val(x) + v${squared_expr(x)};
+}
+
+macro func proxy_e(x) {
+    return e${v${squared_val(x) + v${squared_expr(x)}}};
+}
+
+macro func proxy_f(x) {
+    var temp = squared_val(x);
+    return e${identity(v${temp})};
+}
+
+macro func func_expr_a(x) {
+    var y = x * 2.0;
+    return e${
+        identity(v${y})
+    };
+}
+
+macro func func_expr_b(x) {
+    return e${
+        identity(v${x} * squared_val(v${x}) * squared_expr(v${x}))
+    };
+}
+
+func main() {
+    println(squared_val(5.0));   // 25
+    println(squared_expr(5.0));  // 25
+    println(proxy_a(5.0));       // 25
+    println(proxy_b(5.0));       // 25
+    println(proxy_c(5.0));       // 50
+    println(proxy_d(5.0));       // 50
+    println(proxy_e(5.0));       // 50
+    println(proxy_f(5.0));       // 25
+    println(func_expr_a(5.0));   // 10
+    println(func_expr_b(5.0));   // 3125
+}

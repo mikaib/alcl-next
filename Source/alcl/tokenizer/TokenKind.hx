@@ -21,6 +21,7 @@ enum TokenKind {
     Semicolon;
     Slash;
     Star;
+    Dollar;
     Percent;
     Question;
     Assign;

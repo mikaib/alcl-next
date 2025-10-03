@@ -16,6 +16,9 @@ class Parser {
         this.module = module;
         this.pos = 0;
         this.paths = [
+            // reify
+            new alcl.parser.paths.ReifyPath(),
+
             // cast
             new alcl.parser.paths.CastPath(),
 
