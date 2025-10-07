@@ -1,7 +1,7 @@
-func add_ptrs(a: ptr<i32>, b: ptr<i32>): ptr<i32> {
-    return (i32)a + (i32)b;
+func main() {
+    var x = identity(10.0);
 }
 
-func main() {
-    var x = add_ptrs(10, 20);
+func identity(x) {
+    return x + 3.0;
 }

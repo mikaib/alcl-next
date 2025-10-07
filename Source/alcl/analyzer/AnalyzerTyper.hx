@@ -41,8 +41,14 @@ class AnalyzerTyper {
     }
 
     public function analyseAst(ast: AST, scope: AnalyzerScope): Void {
+        var deferred: Array<Void->Void> = [];
+
         for (node in ast) {
-            analyzeNode(node, scope);
+            analyzeNode(node, scope, deferred);
+        }
+
+        for (def in deferred) {
+            def();
         }
     }
 
@@ -133,7 +139,7 @@ class AnalyzerTyper {
         }
     }
 
-    public function analyzeNode(node: Node, scope: AnalyzerScope): Void {
+    public function analyzeNode(node: Node, scope: AnalyzerScope, deferred: Array<Void->Void>): Void {
         node.validationScope = scope;
 
         switch (node.kind) {
@@ -143,17 +149,19 @@ class AnalyzerTyper {
                 module.functions.push(desc);
                 scope.functions.push(desc);
 
-                var localScope = scope.copy().setCurrentFunction(desc);
-                for (p in desc.parameters) {
-                    localScope.variables.push({
-                        name: p.name,
-                        module: module,
-                        type: p.type,
-                        info: node.info
-                    });
-                }
+                deferred.push(() -> {
+                    var localScope = scope.copy().setCurrentFunction(desc);
+                    for (p in desc.parameters) {
+                        localScope.variables.push({
+                            name: p.name,
+                            module: module,
+                            type: p.type,
+                            info: node.info
+                        });
+                    }
 
-                analyseAst(node.children, localScope);
+                    analyseAst(node.children, localScope);
+                });
 
             case VarDecl(desc):
                 scope.variables.push(desc);
