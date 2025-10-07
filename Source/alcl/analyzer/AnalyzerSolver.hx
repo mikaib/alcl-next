@@ -62,6 +62,10 @@ class AnalyzerSolver {
             }
         }
 
+        if (to.isPointer() && to.parameters[0].eq(from)) {
+            return [from, to];
+        }
+
         var queue: Array<{type: AnalyzerType, path: Array<AnalyzerType>}> = [{type: from, path: [from]}];
         var visited: Map<String, Bool> = new Map();
         visited.set(from.toString(), true);
@@ -89,22 +93,7 @@ class AnalyzerSolver {
             }
 
             for (vr in validVariants) {
-                var toVar = vr.copy();
-                toVar.parameters[0] = current.type;
-
-                var toKey = toVar.toString();
-                if (!visited.exists(toKey)) {
-                    visited.set(toKey, true);
-
-                    var toPath = current.path.copy();
-                    toPath.push(toVar);
-
-                    if (toVar.eq(to)) {
-                        return toPath;
-                    }
-
-                    queue.push({ type: toVar, path: toPath });
-                }
+                if (!from.isPointer() && to.isPointer()) continue; // pointers only allow *direct* conversions (i32 -> ptr<i32>, i32 -> ptr<i64> is not valid)
 
                 if (current.type.parameters[0] != null) {
                     var varBase = current.type.parameters[0];

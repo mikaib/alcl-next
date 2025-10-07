@@ -1,10 +1,10 @@
-func identity(x: c_str) {
+func identity(x: i64) {
     return x;
 }
 
 func main() {
     var x: i32 = 1;       // x is the value of 1.
-    var y: ptr<i64> = x; // x gets implicitly cast to a pointer type.
+    var y: ptr<i32> = x; // x gets implicitly cast to a pointer type.
     var z: i32 = y;
     var w = (ptr<i32>)z;
     var q = identity(y);

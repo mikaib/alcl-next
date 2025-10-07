@@ -332,7 +332,6 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="C:\Users\mikai\Desktop\Projects\ALCL\out\Source\alcl_conv.c" />
     <ClCompile Include="C:\Users\mikai\Desktop\Projects\ALCL\out\Source\alcl_main.c" />
   </ItemGroup>
   <ItemGroup />

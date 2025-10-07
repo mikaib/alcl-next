@@ -1,15 +1,7 @@
-func identity(x: c_str) {
-    return x;
+func add_ptrs(a: ptr<i32>, b: ptr<i32>): ptr<i32> {
+    return (i32)a + (i32)b;
 }
 
 func main() {
-    var x: i32 = 1;       // x is the value of 1.
-    var y: ptr<i64> = x; // x gets implicitly cast to a pointer type.
-    var z: i32 = y;
-    var w = (ptr<i32>)z;
-    var q = identity(y);
-
-    // var a: i32 = y + w;
-    // var b = x + w;
-    // var c = x + y;
+    var x = add_ptrs(10, 20);
 }
