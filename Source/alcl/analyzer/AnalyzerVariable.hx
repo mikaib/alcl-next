@@ -7,4 +7,9 @@ class AnalyzerVariable {
     public var module: Module;
     public var type: AnalyzerType;
     public var info: NodeInfo;
+
+    @:to
+    public function toString(): String {
+        return "AnalyzerVariable(" + name + ", " + type.toString() + ')';
+    }
 }

@@ -8,6 +8,7 @@ class AnalyzerType {
     public var id: Int;
     public var baseType: String;
     public var fallbackType: AnalyzerType;
+    public var parameters: Array<AnalyzerType>;
 
     public static var TVoid(get, never): AnalyzerType;
     private static function get_TVoid(): AnalyzerType return AnalyzerType.ofString("void");
@@ -39,6 +40,9 @@ class AnalyzerType {
     public static var TAny(get, never): AnalyzerType;
     private static function get_TAny(): AnalyzerType return AnalyzerType.ofString("any");
 
+    public static var TPtr(get, never): AnalyzerType;
+    private static function get_TPtr(): AnalyzerType return AnalyzerType.ofString("ptr");
+
     public static var TUnknown(get, never): AnalyzerType;
     private static function get_TUnknown(): AnalyzerType return AnalyzerType.ofString("ALCL_Unknown");
 
@@ -56,9 +60,24 @@ class AnalyzerType {
         return t;
     }
 
+    public static function Pointer(type: AnalyzerType): AnalyzerType {
+        var t = TPtr;
+        t.parameters[0] = type;
+
+        return t;
+    }
+
     public function new(baseType: String) {
         this.baseType = baseType;
         this.id = GTID++;
+        this.parameters = [];
+
+        // TODO: properly parse out type params including nested ones, also support multiple type parameters like Type<K, V>
+        var spl = baseType.split("<");
+        if (spl.length != 1) {
+            this.parameters[0] = new AnalyzerType(spl[spl.length - 1].split(">")[0]);
+            this.baseType = spl[0];
+        }
     }
 
     public function isUnknown(): Bool {
@@ -69,13 +88,27 @@ class AnalyzerType {
         return baseType == "ALCL_Dependant";
     }
 
+    public function isPointer(): Bool {
+        return baseType == "ptr";
+    }
+
+    public function isContainingType(): Bool {
+        return baseType == "ptr";
+    }
+
     public function eq(other: AnalyzerType): Bool {
-        return baseType == other.baseType && !isDependant() && !other.isDependant();
+        var pEq = true;
+        for (pIdx in 0...parameters.length) {
+            pEq = pEq && parameters[pIdx]?.eq(other?.parameters[pIdx]);
+        }
+
+        return baseType == other?.baseType && !isDependant() && !other.isDependant() && pEq;
     }
 
     public function set(other: AnalyzerType): Void {
         this.baseType = other.baseType;
         this.fallbackType = other.fallbackType;
+        this.parameters = other.parameters.copy();
     }
 
     public function toCTypeString(): String {
@@ -98,6 +131,8 @@ class AnalyzerType {
                 return "const char*";
             case "c_str":
                 return "const char*";
+            case "ptr":
+                return parameters[0].toCTypeString() + "*";
             case "void":
                 return "void";
         }
@@ -125,6 +160,8 @@ class AnalyzerType {
                 return POINTER_SIZE;
             case "c_str":
                 return POINTER_SIZE;
+            case "ptr":
+                return POINTER_SIZE;
             case "void":
                 return 0;
         }
@@ -143,6 +180,7 @@ class AnalyzerType {
     public function copy(): AnalyzerType {
         var t = new AnalyzerType(baseType);
         t.fallbackType = fallbackType;
+        t.parameters = parameters.copy();
 
         return t;
     }
@@ -155,7 +193,7 @@ class AnalyzerType {
             return "AnalyzerType(fallback=" + fallbackType.toString() + ")";
         }
 
-        return "AnalyzerType(" + baseType + ")";
+        return "AnalyzerType(" + baseType + ", p=" + parameters + ")";
     }
 
     public function toHumanReadableString(): String {
@@ -163,7 +201,18 @@ class AnalyzerType {
             return fallbackType.toHumanReadableString();
         }
 
-        return baseType ?? "Unknown";
+        var typeStr = "Unknown";
+
+        if (baseType != null) {
+            typeStr = baseType;
+        }
+
+        if (parameters.length != 0) {
+            var pStr = parameters.map(p -> p?.toHumanReadableString()).join(", ");
+            typeStr = '$typeStr<$pStr>';
+        }
+
+        return typeStr;
     }
 
 }

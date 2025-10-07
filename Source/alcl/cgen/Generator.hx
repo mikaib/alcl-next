@@ -75,6 +75,12 @@ class Generator {
                 return printExpression(fwNode);
             case Reify(mode):
                 return printExpression(node.children[0]);
+            case Typeless:
+                return printExpression(node.children[0]);
+            case FromVariant(type):
+                return printFromVariant(node, type);
+            case ToVariant(type):
+                return printToVariant(node, type);
             case BinaryOperation(op, resType):
                 return printBinaryOperation(node, op);
             case FunctionCall(name, remappedName, returnType):
@@ -98,6 +104,26 @@ class Generator {
             default:
                 return '';
         }
+    }
+
+    private function printToVariant(node: Node, type: AnalyzerType): String {
+        var expr = printExpression(node.children[0]);
+
+        if (type.isPointer()) {
+            return '(&$expr)';
+        }
+
+        return expr;
+    }
+
+    private function printFromVariant(node: Node, type: AnalyzerType): String {
+        var expr = printExpression(node.children[0]);
+
+        if (type.isPointer()) {
+            return '(*$expr)';
+        }
+
+        return expr;
     }
 
     private function printFunctionDecl(node: Node, buffer: GeneratorBuffer, indentLevel: Int, desc: AnalyzerFunction): Void {

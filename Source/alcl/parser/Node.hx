@@ -1,5 +1,6 @@
 package alcl.parser;
 import alcl.analyzer.AnalyzerScope;
+import haxe.EnumTools.EnumValueTools;
 
 @:structInit
 class Node {
@@ -19,7 +20,7 @@ class Node {
         return result;
     }
 
-    public function wrap(node: Node): Void{
+    public function wrap(node: Node): Void {
         var newNode: Node = {
             kind: this.kind,
             info: this.info.copy(),

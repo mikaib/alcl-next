@@ -8,7 +8,6 @@ class AnalyzerCastImpl {
         narrowingKey(AnalyzerType.TDouble, AnalyzerType.TLong) => true,
         narrowingKey(AnalyzerType.TFloat, AnalyzerType.TInt) => true,
         narrowingKey(AnalyzerType.TFloat, AnalyzerType.TLong) => true,
-        narrowingKey(AnalyzerType.TInt, AnalyzerType.TFloat) => true,
         narrowingKey(AnalyzerType.TLong, AnalyzerType.TInt) => true,
         narrowingKey(AnalyzerType.TLong, AnalyzerType.TFloat) => true,
         narrowingKey(AnalyzerType.TLong, AnalyzerType.TDouble) => true,
@@ -68,6 +67,14 @@ class AnalyzerCastImpl {
         constraint.result.set(constraint.want.type);
         constraint.have.type.set(constraint.want.type);
 
+        return true;
+    }
+
+    public static function toPtrConv(constraint: AnalyzerConstraint, solver: AnalyzerSolver): Bool {
+        return true;
+    }
+
+    public static function fromPtrConv(constraint: AnalyzerConstraint, solver: AnalyzerSolver): Bool {
         return true;
     }
 

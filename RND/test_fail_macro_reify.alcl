@@ -1,0 +1,6 @@
+import "io"
+
+func main() {
+    var x = e${5 + 5}; // should throw error, no context for reification as it's not in a macro
+    println(x);
+}

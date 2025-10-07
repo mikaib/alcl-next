@@ -53,7 +53,7 @@
       "patterns": [
         {
           "name": "keyword.control.alcl",
-          "match": "\\b(while|for|return|break|continue|if|else|in|of|as|end|inline|macro|defer)\\b"
+          "match": "\\b(while|for|return|break|continue|if|else|in|of|as|end|inline|macro|defer|typeless)\\b"
         }
       ]
     },

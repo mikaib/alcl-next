@@ -31,6 +31,9 @@ enum NodeKind {
     Meta(type: String);
     Reify(mode: AnalyzerReifyMode);
     Forward(node: Node);
+    ToVariant(type: AnalyzerType);
+    FromVariant(type: AnalyzerType);
+    Typeless;
 
     // operations
     BinaryOperation(op: String, resType: AnalyzerType);

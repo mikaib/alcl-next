@@ -63,6 +63,9 @@ class AnalyzerTyper {
             case BooleanLiteralNode(value):
                 return AnalyzerType.TBool;
 
+            case Typeless:
+                return AnalyzerType.TUnknown;
+
             case VarDecl(desc):
                 return desc.type;
 
@@ -74,6 +77,12 @@ class AnalyzerTyper {
 
             case FunctionCall(name, remappedName, returnType):
                 return returnType;
+
+            case FromVariant(type):
+                return type.parameters[0];
+
+            case ToVariant(type):
+                return type;
 
             case CCast(type):
                 return type.copy();

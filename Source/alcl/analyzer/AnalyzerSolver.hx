@@ -1,6 +1,7 @@
 package alcl.analyzer;
 
 import alcl.parser.Node;
+import alcl.parser.NodeKind;
 
 class AnalyzerSolver {
 
@@ -8,9 +9,13 @@ class AnalyzerSolver {
     public var pendingConstraints: Array<AnalyzerConstraint> = [];
     public var allConstraints: Array<AnalyzerConstraint> = [];
     public var validCasts: Array<AnalyzerCastMethod> = [];
+    public var validVariants: Array<AnalyzerType> = [];
 
     public function new(analyzer: AnalyzerTyper) {
         this.typer = analyzer;
+
+        // add pointer varaint
+        addVariant(AnalyzerType.TPtr);
 
         // numerical conversions
         addCastMethod({ from: AnalyzerType.TInt, to: AnalyzerType.TFloat, handler: AnalyzerCastImpl.numericConv });
@@ -38,6 +43,10 @@ class AnalyzerSolver {
         addCastMethod({ from: AnalyzerType.TBool, to: AnalyzerType.TCString, handler: AnalyzerCastImpl.createRuntimeConv("bool_to_cstr", "conv") });
     }
 
+    public function addVariant(type: AnalyzerType): Void {
+        validVariants.push(type);
+    }
+    
     public function addCastMethod(cst: AnalyzerCastMethod): Void {
         validCasts.push(cst);
     }
@@ -75,6 +84,43 @@ class AnalyzerSolver {
                         }
 
                         queue.push({type: nextType, path: newPath});
+                    }
+                }
+            }
+
+            for (vr in validVariants) {
+                var toVar = vr.copy();
+                toVar.parameters[0] = current.type;
+
+                var toKey = toVar.toString();
+                if (!visited.exists(toKey)) {
+                    visited.set(toKey, true);
+
+                    var toPath = current.path.copy();
+                    toPath.push(toVar);
+
+                    if (toVar.eq(to)) {
+                        return toPath;
+                    }
+
+                    queue.push({ type: toVar, path: toPath });
+                }
+
+                if (current.type.parameters[0] != null) {
+                    var varBase = current.type.parameters[0];
+                    var varBaseKey = varBase.toString();
+
+                    if (!visited.exists(varBaseKey)) {
+                        visited.set(varBaseKey, true);
+
+                        var varBasePath = current.path.copy();
+                        varBasePath.push(varBase);
+
+                        if (varBase.eq(to)) {
+                            return varBasePath;
+                        }
+
+                        queue.push({ type: varBase, path: varBasePath });
                     }
                 }
             }
@@ -200,6 +246,7 @@ class AnalyzerSolver {
 
     public function tryCast(c: AnalyzerConstraint): Bool {
         var castChain = findCast(c.have.type, c.want.type);
+
         if (castChain.length >= 2) {
             var currentConstraint = c.copy();
 
@@ -207,21 +254,56 @@ class AnalyzerSolver {
                 var fromType = castChain[i - 1];
                 var toType = castChain[i];
 
+                var done = false;
+                var stepConstraint: AnalyzerConstraint = {
+                    want: AnalyzerPair.fromNode(c.want?.node, toType),
+                    have: AnalyzerPair.fromNode(c.have?.node, c.have?.type),
+                    explicit: c.explicit
+                };
+
+                if (currentConstraint.have.node != null) {
+                    stepConstraint.have.node = currentConstraint.have.node;
+                }
+
                 for (cst in validCasts) {
                     if (cst.from.eq(fromType) && cst.to.eq(toType)) {
-                        var stepConstraint: AnalyzerConstraint = {
-                            want: AnalyzerPair.fromNode(c.want?.node, toType),
-                            have: AnalyzerPair.fromNode(c.have?.node, c.have?.type),
-                            explicit: c.explicit
-                        };
-
-                        if (currentConstraint.have.node != null) {
-                            stepConstraint.have.node = currentConstraint.have.node;
-                        }
-
                         if (cst.handler(stepConstraint, this)) {
                             currentConstraint.have.type.set(toType);
+                            done = true;
+                            break;
                         }
+                    }
+                }
+
+                if (done) {
+                    continue;
+                }
+
+                for (v in validVariants) {
+                    var vrTo = v.copy();
+                    vrTo.parameters[0] = fromType;
+
+                    var vrFrom = v.copy();
+                    vrFrom.parameters[0] = toType;
+
+                    if(vrTo.eq(toType)) {
+                        stepConstraint.have.type.set(toType);
+                        stepConstraint.have.node.wrap({
+                            kind: NodeKind.ToVariant(vrTo),
+                            info: stepConstraint.have.node.info
+                        });
+                        currentConstraint.have.type.set(toType);
+                        break;
+                    }
+
+                    if (vrFrom.eq(fromType)) {
+                        stepConstraint.have.type.set(toType);
+                        stepConstraint.have.node.wrap({
+                            kind: NodeKind.FromVariant(vrFrom),
+                            info: stepConstraint.have.node.info
+                        });
+                        currentConstraint.have.type.set(toType);
+                        break;
                     }
                 }
             }

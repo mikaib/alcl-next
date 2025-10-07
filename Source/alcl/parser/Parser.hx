@@ -36,8 +36,8 @@ class Parser {
             // vars
             new alcl.parser.paths.VariableDeclPath(),
 
-            // ident
-            new alcl.parser.paths.IdentifierPath(),
+            // typeless
+            new alcl.parser.paths.TypelessPath(),
 
             // binop
             new alcl.parser.paths.BinaryOperationPath(),
@@ -46,6 +46,9 @@ class Parser {
             new alcl.parser.paths.ImportPath(),
             new alcl.parser.paths.MetaPath(),
             new alcl.parser.paths.SemicolonPath(),
+
+            // ident
+            new alcl.parser.paths.IdentifierPath()
         ];
 
         if (doRun) {

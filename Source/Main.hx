@@ -46,7 +46,8 @@ class Main {
         });
 
         // ensure main module is loaded
-        context.main();
+        var main = context.main();
+        trace(main.typedAst);
 
         // create output dir
         var output = context.options.outputDirectory;
