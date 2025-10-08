@@ -328,7 +328,10 @@ class AnalyzerSolver {
 
     public function solve(): Bool {
         while (iter(false)) {}
-        while (iter(true)) {}
+
+        if (typer.context.options.greedySolver && pendingConstraints.length > 0) {
+            while (iter(true)) {}
+        }
 
         if (pendingConstraints.length == 0) {
             return true;
