@@ -5,19 +5,20 @@ import haxe.io.Path;
 import haxe.CallStack;
 import alcl.eval.EvalContext;
 
-using alcl.ErrorUtil;
-using alcl.WarningUtil;
-
 class Context {
 
     public var options: ContextOptions;
     public var generatorContext: GeneratorContext;
     public var moduleResolver: ModuleResolver;
+    public var errors: Array<{ module: Module, error: Error }>;
+    public var warnings: Array<{ module: Module, warning: Warning }>;
 
     public function new(options: ContextOptions) {
         this.options = options;
         this.moduleResolver = new ModuleResolver(this);
         this.generatorContext = new GeneratorContext(this);
+        this.errors = [];
+        this.warnings = [];
     }
 
     public inline function module(module: String): Module {
@@ -71,16 +72,11 @@ class Context {
     }
 
     public function emitError(module: Module, error: Error): Void {
-        var formatted = error.errorToString();
-        Sys.println('[ERROR] ${module?.path ?? '(internal)'}${formatted.pos != null ? ':${formatted.pos}' : ""} ${formatted.message}');
-        Sys.println(CallStack.toString(CallStack.callStack()));
-
-        Sys.exit(1);
+        errors.push({ module: module, error: error });
     }
 
     public function emitWarning(module: Module, warning: Warning): Void {
-        var formatted = warning.warningToString();
-        Sys.println('[WARNING] ${module?.path ?? '(internal)'}${formatted.pos != null ? ':${formatted.pos}' : ""} ${formatted.message}');
+        warnings.push({ module: module, warning: warning });
     }
 
 }

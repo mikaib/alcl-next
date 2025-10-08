@@ -1,8 +1,15 @@
 package;
+
 import alcl.Context;
 import haxe.io.Path;
 import sys.FileSystem;
 import sys.io.File;
+import haxe.CallStack.CallStack.callStack;
+import haxe.CallStack;
+import haxe.CallStack.CallStack.toString;
+
+using alcl.ErrorUtil;
+using alcl.WarningUtil;
 
 class Main {
 
@@ -46,8 +53,25 @@ class Main {
         });
 
         // ensure main module is loaded
-        var main = context.main();
-        trace(main.typedAst);
+        context.main();
+
+        // log warnings
+        for (v in context.warnings) {
+            var formatted = v.warning.warningToString();
+            Sys.println('[WARNING] ${v.module?.path ?? '(internal)'}${formatted.pos != null ? ':${formatted.pos}' : ""} ${formatted.message}');
+        }
+
+        // log errors
+        for (v in context.errors) {
+            var formatted = v.error.errorToString();
+            Sys.println('[ERROR] ${v.module?.path ?? '(internal)'}${formatted.pos != null ? ':${formatted.pos}' : ""} ${formatted.message}');
+            Sys.println(CallStack.toString(CallStack.callStack()));
+        }
+
+        // exit if there were errors
+        if (context.errors.length > 0) {
+            Sys.exit(1);
+        }
 
         // create output dir
         var output = context.options.outputDirectory;
