@@ -1,0 +1,13 @@
+import "io"
+
+func even(x) {
+    return x == 0 ? true : odd(x - 1);
+}
+
+func odd(x) {
+    return x == 0 ? false : even(x - 1);
+}
+
+func main() {
+    println(even(4));
+}

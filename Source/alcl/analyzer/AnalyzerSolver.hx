@@ -187,14 +187,16 @@ class AnalyzerSolver {
         return v.result;
     }
 
-    public function unify(c: AnalyzerConstraint): Bool {
+    public function unify(c: AnalyzerConstraint, overwriteDependants: Bool = false): Bool {
+        trace(c);
+
         // if both are unknown, we can't unify
         if (c.want.type.isUnknown() && c.have.type.isUnknown()) {
             return false;
         }
 
         // the type we want may not be pending a resolve
-        if (c.want.type.isDependant() || c.have.type.isDependant()) {
+        if ((c.want.type.isDependant() || c.have.type.isDependant()) && !overwriteDependants) {
             return false;
         }
 
@@ -306,11 +308,12 @@ class AnalyzerSolver {
         return false;
     }
 
-    public function iter(): Bool {
+    public function iter(overwriteDependants: Bool = false): Bool {
+        trace('------------------------');
         var removalQueue: Array<AnalyzerConstraint> = [];
 
         for (c in pendingConstraints) {
-            if (unify(c)) {
+            if (unify(c, overwriteDependants)) {
                 removalQueue.push(c);
                 continue;
             }
@@ -324,14 +327,16 @@ class AnalyzerSolver {
     }
 
     public function solve(): Bool {
-        while (iter()) {}
+        while (iter(false)) {}
+        while (iter(true)) {}
 
         if (pendingConstraints.length == 0) {
             return true;
         }
 
         for (c in pendingConstraints) {
-            typer.context.emitError(typer.module, AnalyzerTypeMismatch(c));
+            if (c.have.type.isUnknown() || c.want.type.isUnknown()) typer.context.emitError(typer.module, AnalyzerUnresolvedType(c));
+            else typer.context.emitError(typer.module, AnalyzerTypeMismatch(c));
         }
 
         return false;

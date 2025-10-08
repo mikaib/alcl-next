@@ -22,6 +22,7 @@ enum Error {
     AnalyzerUnknownVariable(name: String, info: NodeInfo);
     AnalyzerUnknownType(name: AnalyzerType, info: NodeInfo);
     AnalyzerTypeMismatch(constraint: AnalyzerConstraint);
+    AnalyzerUnresolvedType(constraint: AnalyzerConstraint);
     AnalyzerReturnOutsideFunction(info: NodeInfo);
     AnalyzerInvalidConversionFunction(name: String, info: NodeInfo);
     AnalyzerInvalidCast(from: AnalyzerType, to: AnalyzerType, info: NodeInfo);

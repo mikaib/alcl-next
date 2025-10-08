@@ -38,6 +38,8 @@ class ErrorUtil {
                 return { message: 'Unknown variable: $name', pos: nodeInfoToString(info) };
             case AnalyzerTypeMismatch(c):
                 return { message: 'Type mismatch: expected ${c.want.type.toHumanReadableString()} but got ${c.have.type.toHumanReadableString()}', pos: nodeInfoToString(c?.have?.node?.info) };
+            case AnalyzerUnresolvedType(c):
+                return { message: 'Unresolved type, please ensure other code is valid or explicitly add types', pos: nodeInfoToString(c?.have?.node?.info) };
             case AnalyzerUnknownType(type, info):
                 return { message: 'Unknown type: $type', pos: nodeInfoToString(info) };
             case AnalyzerReturnOutsideFunction(info):
