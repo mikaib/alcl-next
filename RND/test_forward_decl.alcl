@@ -8,6 +8,11 @@ func odd(x) {
     return x == 0 ? false : even(x - 1);
 }
 
-func main() {
-    println(even(4));
+func fibbs(n) {
+    return n < 2 ? 1 : fibbs(n - 2) + fibbs(n - 1);
 }
+
+// func main() {
+//     println(even(4));
+//     println(fibbs(1));
+// }

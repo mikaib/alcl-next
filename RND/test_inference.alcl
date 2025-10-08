@@ -1,5 +1,9 @@
 import "io"
 
+func non_ref_func(x) {
+    return x - 1;
+}
+
 func sumA(x: i32, y): i32 {
     return x + (i32)y;
 }

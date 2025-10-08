@@ -9,5 +9,4 @@ class ContextOptions {
     public var main: String = "main";                                      // the main module to compile
     public var projectName: String = "alcl";                               // the prefix for functions, can be used to prevent name clashes
     public var outputDirectory: String = Path.join([Sys.getCwd(), "out"]); // place for the binary and C source files
-    public var greedySolver: Bool = false;                                 // will make the solver "greedy" and force it to solve dependant types if it cannot solve otherwise
 }
