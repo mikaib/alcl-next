@@ -71,7 +71,7 @@ class BinaryOperationPath extends ParserPath {
 
     public static function isOperator(kind: TokenKind): Bool {
         return switch (kind) {
-            case Plus, Minus, Star, Slash, Percent, Equal, NotEqual, Greater, GreaterEqual, Less, LessEqual, And, Or, Not, Arrow:
+            case Plus, Minus, Star, Slash, Percent, Equal, NotEqual, Greater, GreaterEqual, Less, LessEqual, And, Or, Not, Arrow, Question:
                 true;
             default:
                 false;
@@ -86,16 +86,18 @@ class BinaryOperationPath extends ParserPath {
                 return 1;
             case And:
                 return 2;
-            case Equal, NotEqual:
+            case Question:
                 return 3;
-            case Less, LessEqual, Greater, GreaterEqual:
+            case Equal, NotEqual:
                 return 4;
-            case Plus, Minus:
+            case Less, LessEqual, Greater, GreaterEqual:
                 return 5;
-            case Star, Slash, Percent:
+            case Plus, Minus:
                 return 6;
-            case Not:
+            case Star, Slash, Percent:
                 return 7;
+            case Not:
+                return 8;
             default:
                 throw "Unknown operation: " + op;
         }

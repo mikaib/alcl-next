@@ -128,6 +128,14 @@ class EvalContext {
             case BooleanLiteralNode(value):
                 return { type: AnalyzerType.TBool, value: value == "true" };
 
+            case TernaryNode(resType):
+                var cond = execNode(node.children[0], scope);
+                if (cond.value == 1) {
+                    return execNode(node.children[1], scope);
+                } else {
+                    return execNode(node.children[2], scope);
+                }
+
             case CCast(to):
                 var value = execNode(node.children[0], scope);
                 return castValue(value, to);
@@ -160,7 +168,7 @@ class EvalContext {
             case FunctionDecl(desc):
                 var decl: EvalFunction = {
                     desc: desc,
-                    scope: scope.copy(),
+                    scope: scope,
                     body: node.children,
                     patchedImpl: null
                 };

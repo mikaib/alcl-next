@@ -1,11 +1,17 @@
 #include "./alcl_main.h"
+#include "./alcl_io.h"
+#include "./alcl_conv.h"
 
-void alcl_main_main() {
-    double x = alcl_main_identity(10.0);
+int alcl_main_even(int x) {
+    return (((x == 0)) ? (1) : (alcl_main_odd((x - 1))));
 }
 
-double alcl_main_identity(double x) {
-    return (x + 3.0);
+int alcl_main_odd(int x) {
+    return (((x == 0)) ? (0) : (alcl_main_even((x - 1))));
+}
+
+void alcl_main_main() {
+    alcl_io_println(alcl_conv_bool_to_cstr(alcl_main_even(4)));
 }
 
 int main(int argc, char** argv) {

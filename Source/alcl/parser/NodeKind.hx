@@ -33,8 +33,9 @@ enum NodeKind {
     Forward(node: Node);
     ToVariant(type: AnalyzerType);
     FromVariant(type: AnalyzerType);
-    Typeless;
+    Untyped;
 
     // operations
     BinaryOperation(op: String, resType: AnalyzerType);
+    TernaryNode(resType: AnalyzerType);
 }

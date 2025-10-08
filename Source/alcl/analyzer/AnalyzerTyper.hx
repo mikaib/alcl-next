@@ -69,7 +69,7 @@ class AnalyzerTyper {
             case BooleanLiteralNode(value):
                 return AnalyzerType.TBool;
 
-            case Typeless:
+            case Untyped:
                 return AnalyzerType.TUnknown;
 
             case VarDecl(desc):
@@ -95,6 +95,9 @@ class AnalyzerTyper {
 
             case Cast(type):
                 return type.copy();
+
+            case TernaryNode(resType):
+                return resType;
 
             case IdentifierNode(name, resType):
                 return resType;
@@ -202,7 +205,17 @@ class AnalyzerTyper {
 
             case BinaryOperation(op, resType):
                 analyseAst(node.children, scope);
+
+                if (op == "==" || op == "!=" || op == "<" || op == "<=" || op == ">" || op == ">=" || op == "&&" || op == "||") {
+                    resType.set(AnalyzerType.TBool);
+                }
+
                 solver.nodeMustMatchNodeRes(node.children[0], node.children[1], resType, scope);
+
+            case TernaryNode(resType):
+                analyseAst(node.children, scope);
+                solver.nodeMustMatchNodeRes(node.children[1], node.children[2], resType, scope);
+                solver.nodeMustMatchType(AnalyzerType.TBool, node.children[0], scope);
 
             case IdentifierNode(name, resType):
                 var v = scope.findVariable(name);

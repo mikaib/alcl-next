@@ -22,6 +22,9 @@ class Parser {
             // cast
             new alcl.parser.paths.CastPath(),
 
+            // ternary
+            new alcl.parser.paths.TernaryPath(),
+
             // func
             new alcl.parser.paths.ReturnPath(),
             new alcl.parser.paths.FunctionDeclPath(),
@@ -37,7 +40,7 @@ class Parser {
             new alcl.parser.paths.VariableDeclPath(),
 
             // typeless
-            new alcl.parser.paths.TypelessPath(),
+            new alcl.parser.paths.UntypedPath(),
 
             // binop
             new alcl.parser.paths.BinaryOperationPath(),

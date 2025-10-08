@@ -1,7 +1,13 @@
-func main() {
-    var x = identity(10.0);
+import "io"
+
+func even(x) {
+    return x == 0 ? true : odd(x - 1);
 }
 
-func identity(x) {
-    return x + 3.0;
+func odd(x) {
+    return x == 0 ? false : even(x - 1);
+}
+
+func main() {
+    println(even(4));
 }

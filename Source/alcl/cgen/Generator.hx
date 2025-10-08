@@ -75,7 +75,7 @@ class Generator {
                 return printExpression(fwNode);
             case Reify(mode):
                 return printExpression(node.children[0]);
-            case Typeless:
+            case Untyped:
                 return printExpression(node.children[0]);
             case FromVariant(type):
                 return printFromVariant(node, type);
@@ -101,6 +101,11 @@ class Generator {
                 return value;
             case BooleanLiteralNode(value):
                 return value == "true" ? "1" : "0";
+            case TernaryNode(resType):
+                var cond = printExpression(node.children[0]);
+                var trueExpr = printExpression(node.children[1]);
+                var falseExpr = printExpression(node.children[2]);
+                return '((' + cond + ') ? (' + trueExpr + ') : (' + falseExpr + '))';
             default:
                 return '';
         }
