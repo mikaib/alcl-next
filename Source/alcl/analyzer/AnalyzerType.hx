@@ -7,7 +7,7 @@ class AnalyzerType {
 
     public var id: Int;
     public var baseType: String;
-    public var fallbackType: AnalyzerType;
+    public var concrete: Bool = true;
     public var parameters: Array<AnalyzerType>;
 
     public static var TVoid(get, never): AnalyzerType;
@@ -47,15 +47,15 @@ class AnalyzerType {
     private static function get_TUnknown(): AnalyzerType return AnalyzerType.ofString("ALCL_Unknown");
 
     public static var TDependant(get, never): AnalyzerType;
-    private static function get_TDependant(): AnalyzerType return AnalyzerType.ofString("ALCL_Dependant");
+    private static function get_TDependant(): AnalyzerType return AnalyzerType.Fallback(TUnknown);
 
     public static function ofString(type: String): AnalyzerType {
         return new AnalyzerType(type);
     }
 
     public static function Fallback(type: AnalyzerType): AnalyzerType {
-        var t = TUnknown;
-        t.fallbackType = type;
+        var t = type.copy();
+        t.concrete = false;
 
         return t;
     }
@@ -81,11 +81,11 @@ class AnalyzerType {
     }
 
     public function isUnknown(): Bool {
-        return baseType == "ALCL_Unknown" || baseType == "ALCL_Dependant";
+        return baseType == "ALCL_Unknown";
     }
 
-    public function isDependant(): Bool {
-        return baseType == "ALCL_Dependant";
+    public function isConcrete(): Bool {
+        return concrete;
     }
 
     public function isPointer(): Bool {
@@ -102,20 +102,16 @@ class AnalyzerType {
             pEq = pEq && parameters[pIdx]?.eq(other?.parameters[pIdx]);
         }
 
-        return baseType == other?.baseType && !isDependant() && !other.isDependant() && pEq;
+        return baseType == other?.baseType;
     }
 
     public function set(other: AnalyzerType): Void {
         this.baseType = other.baseType;
-        this.fallbackType = other.fallbackType;
+        this.concrete = other.concrete;
         this.parameters = other.parameters.copy();
     }
 
     public function toCTypeString(): String {
-        if (isUnknown() && fallbackType != null) {
-            return fallbackType.toCTypeString();
-        }
-
         switch (baseType) {
             case "i32":
                 return "int";
@@ -141,10 +137,6 @@ class AnalyzerType {
     }
 
     public function getSize(): Int {
-        if (isUnknown() && fallbackType != null) {
-            return fallbackType.getSize();
-        }
-
         switch (baseType) {
             case "i32":
                 return 4;
@@ -170,16 +162,12 @@ class AnalyzerType {
     }
 
     public function isNumeric(): Bool {
-        if (isUnknown() && fallbackType != null) {
-            return fallbackType.isNumeric();
-        }
-
         return baseType == "i32" || baseType == "i64" || baseType == "f32" || baseType == "f64";
     }
 
     public function copy(): AnalyzerType {
         var t = new AnalyzerType(baseType);
-        t.fallbackType = fallbackType;
+        t.concrete = concrete;
         t.parameters = parameters.copy();
 
         return t;
@@ -188,19 +176,10 @@ class AnalyzerType {
     @:to
     public function toString(): String {
         // return 'T($baseType, #$id)';
-
-        if (isUnknown() && fallbackType != null) {
-            return "AnalyzerType(fallback=" + fallbackType.toString() + ")";
-        }
-
-        return "AnalyzerType(" + baseType + ", p=" + parameters + ")";
+        return "AnalyzerType(" + baseType + ", p=" + parameters + ", c=" + concrete + ", id=" + id + ")";
     }
 
     public function toHumanReadableString(): String {
-        if (isUnknown() && fallbackType != null) {
-            return fallbackType.toHumanReadableString();
-        }
-
         var typeStr = "Unknown";
 
         if (baseType != null) {

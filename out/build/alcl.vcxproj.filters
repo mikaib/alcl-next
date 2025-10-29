@@ -1,22 +1,16 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="C:\desktop\alcl-next\out\Source\alcl_conv.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\desktop\alcl-next\out\Source\alcl_main.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\desktop\alcl-next\out\Source\alcl_io.c">
+    <ClCompile Include="C:\Users\mikai\Desktop\Projects\ALCL\out\Source\alcl_main.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="C:\desktop\alcl-next\out\CMakeLists.txt" />
+    <CustomBuild Include="C:\Users\mikai\Desktop\Projects\ALCL\out\CMakeLists.txt" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Source Files">
-      <UniqueIdentifier>{17B0BAD0-7EF3-307A-9219-947F1B3B8736}</UniqueIdentifier>
+      <UniqueIdentifier>{053BB288-23FD-3C45-8A10-8DE59B2A3076}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

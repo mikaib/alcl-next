@@ -14,7 +14,7 @@ class AnalyzerCastImpl {
     ];
 
     private static function narrowingKey(have: AnalyzerType, want: AnalyzerType): String {
-        return have.toString() + "->" + want.toString();
+        return have.baseType + "->" + want.baseType;
     }
 
     private static function isNarrowingConversion(from: AnalyzerType, to: AnalyzerType): Bool {

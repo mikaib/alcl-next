@@ -1,18 +1,7 @@
-import "io"
-
-func even(x) {
-    return x == 0 ? true : odd(x - 1);
+func foo() {
+    return 3 + 3.5;
 }
 
-func odd(x) {
-    return x == 0 ? false : even(x - 1);
+func main() {
+    return foo();
 }
-
-func fibbs(n) {
-    return n < 2 ? 1 : fibbs(n - 2) + fibbs(n - 1);
-}
-
-// func main() {
-//     println(even(4));
-//     println(fibbs(1));
-// }

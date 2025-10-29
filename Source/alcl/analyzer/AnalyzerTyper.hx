@@ -91,10 +91,10 @@ class AnalyzerTyper {
                 return type;
 
             case CCast(type):
-                return type.copy();
+                return type;
 
             case Cast(type):
-                return type.copy();
+                return type;
 
             case TernaryNode(resType):
                 return resType;
@@ -112,7 +112,7 @@ class AnalyzerTyper {
                 trace('Unhandled node kind - getType: ' + node);
         }
 
-        return AnalyzerType.TAny;
+        return AnalyzerType.TUnknown;
     }
 
     public function validateNode(node: Node): Void {
@@ -166,35 +166,22 @@ class AnalyzerTyper {
                     analyseAst(node.children, localScope);
                 });
 
-            case VarDecl(desc):
-                scope.variables.push(desc);
+            case FunctionCall(name, remappedName, returnType):
                 analyseAst(node.children, scope);
 
-                solver.nodeMustMatchType(desc.type, node.children[0], scope);
-
-            case FunctionCall(name, remappedName,  returnType):
                 var f = scope.findFunction(name);
                 if (f == null) {
                     context.emitError(module, AnalyzerUnknownFunction(name, node.info));
                 }
 
-                analyseAst(node.children, scope);
+                for (idx in 0...f.parameters.length) {
+                    var param = f.parameters[idx];
+                    var child = node.children[idx];
 
-                for (i in 0...f.parameters.length) {
-                    var declParam = f.parameters[i];
-                    var callParam = node.children[i];
-
-                    if (callParam == null || declParam == null) {
-                        throw "too few parameters in function call";
-                    }
-
-                    var tmp = AnalyzerType.TUnknown;
-                    solver.nodeMustMatchType(tmp, callParam, scope);
-                    solver.nodeMustMatchTypeVerbose(declParam.type, tmp, callParam, scope);
+                    solver.nodeMustMatchType(param.type, child, scope);
                 }
 
-                var tmp = AnalyzerType.TUnknown;
-                solver.nodeMustMatchTypeVerboseRes(tmp, f.returnType, returnType, node, scope);
+                solver.nodeMustMatchType(f.returnType, node, scope);
 
                 if (f.metas.filter(m -> m.kind == Macro).length > 0) {
                     node.kind = NodeKind.MacroFunctionCall(name, f.remappedName, returnType);
@@ -203,52 +190,20 @@ class AnalyzerTyper {
 
                 node.kind = NodeKind.FunctionCall(name, f.remappedName, returnType);
 
-            case BinaryOperation(op, resType):
-                analyseAst(node.children, scope);
-
-                if (op == "==" || op == "!=" || op == "<" || op == "<=" || op == ">" || op == ">=" || op == "&&" || op == "||") {
-                    resType.set(AnalyzerType.TBool);
-                }
-
-                solver.nodeMustMatchNodeRes(node.children[0], node.children[1], resType, scope);
-
-            case TernaryNode(resType):
-                analyseAst(node.children, scope);
-                solver.nodeMustMatchNodeRes(node.children[1], node.children[2], resType, scope);
-                solver.nodeMustMatchType(AnalyzerType.TBool, node.children[0], scope);
-
-            case IdentifierNode(name, resType):
-                var v = scope.findVariable(name);
-                if (v == null) {
-                    context.emitError(module, AnalyzerUnknownVariable(name, node.info));
-                }
-
-                var tmp = AnalyzerType.TUnknown;
-                solver.nodeMustMatchTypeVerboseRes(tmp, v.type, resType, node, scope);
-
             case Return:
-                if (node.children.length == 0) {
-                    return;
-                }
-
                 if (scope.currentFunction == null) {
                     context.emitError(module, AnalyzerReturnOutsideFunction(node.info));
                     return;
                 }
 
                 analyseAst(node.children, scope);
+                solver.nodeMustMatchType(scope.currentFunction.returnType, node.children[0], scope);
 
-                var tmp = AnalyzerType.TUnknown;
-                solver.nodeMustMatchType(tmp, node.children[0], scope);
-                solver.nodeMustMatchTypeVerbose(scope.currentFunction.returnType, tmp, node.children[0], scope);
-
-            case Reify(mode):
+            case BinaryOperation(op, res):
                 analyseAst(node.children, scope);
 
-                if (scope.currentFunction == null || scope.currentFunction.metas.filter(m -> m.kind == Macro).length == 0) {
-                    context.emitError(module, AnalyzerReifyOutsideMacro(node.info));
-                    return;
-                }
+                var eq = solver.nodeMustMatchNode(node.children[0], node.children[1], scope);
+                solver.nodeMustMatchType(eq, node, scope);
 
             default:
                 analyseAst(node.children, scope);

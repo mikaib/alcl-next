@@ -46,7 +46,7 @@ class AnalyzerSolver {
     public function addVariant(type: AnalyzerType): Void {
         validVariants.push(type);
     }
-    
+
     public function addCastMethod(cst: AnalyzerCastMethod): Void {
         validCasts.push(cst);
     }
@@ -133,17 +133,6 @@ class AnalyzerSolver {
         return v.result;
     }
 
-    public function nodeMustMatchNodeRes(want: Node, have: Node, resType: AnalyzerType, scope: AnalyzerScope): AnalyzerType {
-        var v: AnalyzerConstraint = {
-            want: AnalyzerPair.fromNode(want, typer.getType(want, scope)),
-            have: AnalyzerPair.fromNode(have, typer.getType(have, scope)),
-            result: resType
-        };
-
-        addConstraint(v);
-        return v.result;
-    }
-
     public function nodeMustMatchType(want: AnalyzerType, have: Node, scope: AnalyzerScope): AnalyzerType {
         var v: AnalyzerConstraint = {
             want: AnalyzerPair.fromType(want),
@@ -152,87 +141,6 @@ class AnalyzerSolver {
 
         addConstraint(v);
         return v.result;
-    }
-
-    public function nodeMustMatchTypeVerbose(want: AnalyzerType, haveType: AnalyzerType, haveNode: Node, scope: AnalyzerScope, explicit: Bool = false): AnalyzerType {
-        var v: AnalyzerConstraint = {
-            want: AnalyzerPair.fromType(want),
-            have: AnalyzerPair.fromNode(haveNode, haveType),
-            explicit: explicit
-        };
-
-        addConstraint(v);
-        return v.result;
-    }
-
-    public function nodeMustMatchTypeVerboseRes(want: AnalyzerType, haveType: AnalyzerType, resType: AnalyzerType, haveNode: Node, scope: AnalyzerScope, explicit: Bool = false): AnalyzerType {
-        var v: AnalyzerConstraint = {
-            want: AnalyzerPair.fromType(want),
-            have: AnalyzerPair.fromNode(haveNode, haveType),
-            result: resType,
-            explicit: explicit
-        };
-
-        addConstraint(v);
-        return v.result;
-    }
-
-    public function typeMustMatchType(want: AnalyzerType, have: AnalyzerType): AnalyzerType {
-        var v: AnalyzerConstraint = {
-            want: AnalyzerPair.fromType(want),
-            have: AnalyzerPair.fromType(have)
-        };
-
-        addConstraint(v);
-        return v.result;
-    }
-
-    public function unify(c: AnalyzerConstraint, overwriteDependants: Bool = false): Bool {
-        trace(c);
-
-        // if both are unknown, we can't unify
-        if (c.want.type.isUnknown() && c.have.type.isUnknown()) {
-            return false;
-        }
-
-        // the type we want may not be pending a resolve
-        if ((c.want.type.isDependant() || c.have.type.isDependant()) && !overwriteDependants) {
-            return false;
-        }
-
-        // if want is unknown, we can take it from have
-        if (c.want.type.isUnknown()) {
-            c.result.set(c.have.type);
-            c.want.type.set(c.result);
-            return true;
-        }
-
-        // if have is unknown, we can take it from want
-        if (c.have.type.isUnknown()) {
-            c.result.set(c.want.type);
-            c.have.type.set(c.result);
-            return true;
-        }
-
-        // if they are the same type, we can unify
-        if (c.want.type.eq(c.have.type)) {
-            c.result.set(c.want.type);
-            return true;
-        }
-
-        // if either type is any, we can unify without casting
-        if (c.want.type.eq(AnalyzerType.TAny) || c.have.type.eq(AnalyzerType.TAny)) {
-            c.result.set(c.have.type);
-            return true;
-        }
-
-        // check if a cast is possible
-        if (tryCast(c)) {
-            return true;
-        }
-
-        // no unification possible
-        return false;
     }
 
     public function tryCast(c: AnalyzerConstraint): Bool {
@@ -308,19 +216,49 @@ class AnalyzerSolver {
         return false;
     }
 
+    public function unify(c: AnalyzerConstraint, overwriteDependants: Bool = false): Bool {
+        if (c.want.type.isUnknown() && !c.have.type.isUnknown()) {
+            c.want.type.set(c.have.type);
+            c.result.set(c.have.type);
+            return true;
+        }
+
+        if (c.have.type.isUnknown() && !c.want.type.isUnknown()) {
+            c.have.type.set(c.want.type);
+            c.result.set(c.want.type);
+            return true;
+        }
+
+        if (tryCast(c)) {
+            return true;
+        }
+
+        if (!c.have.type.isConcrete() && c.want.type.isConcrete()) {
+            c.have.type.set(c.want.type);
+            c.result.set(c.want.type);
+            return true;
+        }
+
+        if (!c.want.type.isConcrete() && c.have.type.isConcrete()) {
+            c.want.type.set(c.have.type);
+            c.result.set(c.have.type);
+            return true;
+        }
+
+        return false;
+    }
+
     public function iter(overwriteDependants: Bool = false): Bool {
-        trace('------------------------');
         var removalQueue: Array<AnalyzerConstraint> = [];
 
         for (c in pendingConstraints) {
-            if (unify(c, overwriteDependants)) {
-                removalQueue.push(c);
-                continue;
+            if (unify(c)) {
+                pendingConstraints.push(c);
             }
         }
 
-        for (r in removalQueue) {
-            pendingConstraints.remove(r);
+        for (c in removalQueue) {
+            pendingConstraints.remove(c);
         }
 
         return removalQueue.length > 0;
@@ -329,16 +267,11 @@ class AnalyzerSolver {
     public function solve(): Bool {
         while (iter()) {}
 
-        if (pendingConstraints.length == 0) {
-            return true;
+        for (c in allConstraints) {
+            trace(c);
         }
 
-        for (c in pendingConstraints) {
-            if (c.have.type.isUnknown() || c.want.type.isUnknown()) typer.context.emitError(typer.module, AnalyzerUnresolvedType(c));
-            else typer.context.emitError(typer.module, AnalyzerTypeMismatch(c));
-        }
-
-        return false;
+        return pendingConstraints.length == 0;
     }
 
 }

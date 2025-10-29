@@ -1,6 +1,6 @@
-^C:\DESKTOP\ALCL-NEXT\OUT\BUILD\CMAKEFILES\B8354E6FC53A8C56CA45029F71D90FA7\GENERATE.STAMP.RULE
+^C:\USERS\MIKAI\DESKTOP\PROJECTS\ALCL\OUT\BUILD\CMAKEFILES\D11991428CC9693A22D820DBA9FECB37\GENERATE.STAMP.RULE
 setlocal
-C:\ProgramData\chocolatey\lib\cmake.portable\tools\cmake-3.30.0-rc3-windows-x86_64\bin\cmake.exe -SC:/desktop/alcl-next/out -BC:/desktop/alcl-next/out/build --check-stamp-list CMakeFiles/generate.stamp.list --vs-solution-file C:/desktop/alcl-next/out/build/alcl.sln
+"C:\Program Files\CMake\bin\cmake.exe" -SC:/Users/mikai/Desktop/Projects/ALCL/out -BC:/Users/mikai/Desktop/Projects/ALCL/out/build --check-stamp-list CMakeFiles/generate.stamp.list --vs-solution-file C:/Users/mikai/Desktop/Projects/ALCL/out/build/alcl.sln
 if %errorlevel% neq 0 goto :cmEnd
 :cmEnd
 endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone

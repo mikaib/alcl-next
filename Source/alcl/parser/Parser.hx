@@ -125,6 +125,7 @@ class Parser {
 
             if (!found) {
                 context.emitError(module, ParserUnexpectedToken(tokens[localPos]));
+                break;
             }
         }
 

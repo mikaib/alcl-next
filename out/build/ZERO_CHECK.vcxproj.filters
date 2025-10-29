@@ -1,13 +1,13 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <CustomBuild Include="C:\desktop\alcl-next\out\build\CMakeFiles\b8354e6fc53a8c56ca45029f71d90fa7\generate.stamp.rule">
+    <CustomBuild Include="C:\Users\mikai\Desktop\Projects\ALCL\out\build\CMakeFiles\d11991428cc9693a22d820dba9fecb37\generate.stamp.rule">
       <Filter>CMake Rules</Filter>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="CMake Rules">
-      <UniqueIdentifier>{FCF38583-E199-39CD-BEC9-829C4BCFAA4E}</UniqueIdentifier>
+      <UniqueIdentifier>{0284072F-6FAD-3963-81E2-254BAE76B07A}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

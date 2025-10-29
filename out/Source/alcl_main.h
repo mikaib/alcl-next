@@ -1,11 +1,7 @@
 #ifndef ALCL_MAIN_H
 #define ALCL_MAIN_H
 
-#include "./alcl_io.h"
-#include "./alcl_conv.h"
-
-double alcl_main_even(int x);
-double alcl_main_odd(int x);
-void alcl_main_main();
+double alcl_main_foo();
+double alcl_main_main();
 
 #endif //ALCL_MAIN_H
