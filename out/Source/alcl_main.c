@@ -1,11 +1,11 @@
 #include "./alcl_main.h"
 
-double alcl_main_foo() {
-    return (((double)3) + 3.5);
+int alcl_main_sum(int x, double y) {
+    return (((double)x) + y);
 }
 
-double alcl_main_main() {
-    return alcl_main_foo();
+void alcl_main_main() {
+    alcl_main_sum(((int)5.5), 10.5);
 }
 
 int main(int argc, char** argv) {

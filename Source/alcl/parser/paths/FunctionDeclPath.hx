@@ -37,7 +37,7 @@ class FunctionDeclPath extends ParserPath {
             });
         }
 
-        var returnType = AnalyzerType.Fallback(AnalyzerType.TVoid);
+        var returnType = AnalyzerType.TUnknown;
         if (ifKind(Colon)) {
             returnType = expectType();
         }

@@ -102,6 +102,9 @@ class AnalyzerTyper {
             case IdentifierNode(name, resType):
                 return resType;
 
+            case Return(resType):
+                return resType;
+
             case Reify(mode):
                 return getType(node.children[0], scope);
 
@@ -172,6 +175,7 @@ class AnalyzerTyper {
                 var f = scope.findFunction(name);
                 if (f == null) {
                     context.emitError(module, AnalyzerUnknownFunction(name, node.info));
+                    return;
                 }
 
                 for (idx in 0...f.parameters.length) {
@@ -190,7 +194,7 @@ class AnalyzerTyper {
 
                 node.kind = NodeKind.FunctionCall(name, f.remappedName, returnType);
 
-            case Return:
+            case Return(res):
                 if (scope.currentFunction == null) {
                     context.emitError(module, AnalyzerReturnOutsideFunction(node.info));
                     return;
@@ -204,6 +208,17 @@ class AnalyzerTyper {
 
                 var eq = solver.nodeMustMatchNode(node.children[0], node.children[1], scope);
                 solver.nodeMustMatchType(eq, node, scope);
+
+            case IdentifierNode(name, res):
+                analyseAst(node.children, scope);
+
+                var v = scope.findVariable(name);
+                if (v == null) {
+                    context.emitError(module, AnalyzerUnknownVariable(name, node.info));
+                    return;
+                }
+
+                solver.nodeMustMatchType(v.type, node, scope);
 
             default:
                 analyseAst(node.children, scope);

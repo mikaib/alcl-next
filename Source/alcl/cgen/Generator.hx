@@ -61,7 +61,7 @@ class Generator {
                 printFunctionDecl(node, buffer, indentLevel, desc);
             case VarDecl(desc):
                 buffer.println('${desc.type.toCTypeString()} ${desc.name} = ' + printExpression(node.children[0]) + ';', indentLevel);
-            case Return:
+            case Return(resType):
                 buffer.println('return ' + printExpression(node.children[0]) + ';', indentLevel);
             case Meta(type): null;
             default:
@@ -141,7 +141,7 @@ class Generator {
             params.push('${param.type.toCTypeString()} ${param.name}');
         }
 
-        buffer.println('${desc.returnType.toCTypeString()} ${desc.remappedName}(' + params.join(", ") + ') {', indentLevel);
+        buffer.println('${desc.returnType.isUnknown() ? 'void' : desc.returnType.toCTypeString()} ${desc.remappedName}(' + params.join(", ") + ') {', indentLevel);
         printAst(node.children, buffer, indentLevel + 1);
         buffer.println('}', indentLevel);
         buffer.println('', indentLevel);

@@ -208,7 +208,7 @@ class EvalContext {
                         return { type: AnalyzerType.TExpr, value: reifyExpr(node.children[0], scope) };
                 }
 
-            case Return:
+            case Return(resType):
                 return scope.returnValue = execNode(node.children[0], scope);
 
             case CCode(value):

@@ -10,7 +10,7 @@ enum NodeKind {
     FunctionDecl(desc: AnalyzerFunction);
     FunctionCall(name: String, remappedName: String, returnType: AnalyzerType);
     MacroFunctionCall(name: String, remappedName: String, returnType: AnalyzerType);
-    Return;
+    Return(resType: AnalyzerType);
 
     // lit
     StringLiteralNode(value: String);

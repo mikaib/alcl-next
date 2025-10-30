@@ -1,5 +1,6 @@
 package alcl.parser.paths;
 
+import alcl.analyzer.AnalyzerType;
 import alcl.parser.ParserPath;
 import alcl.tokenizer.TokenKind;
 import alcl.Error;
@@ -32,7 +33,7 @@ class ReturnPath extends ParserPath {
 
         var info = getCurrentInfo();
         submitNode({
-            kind: Return,
+            kind: Return(AnalyzerType.TUnknown),
             info: info,
             children: [node]
         });

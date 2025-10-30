@@ -217,6 +217,10 @@ class AnalyzerSolver {
     }
 
     public function unify(c: AnalyzerConstraint, overwriteDependants: Bool = false): Bool {
+        if (c.want.type.isUnknown() && c.have.type.isUnknown()) {
+            return false;
+        }
+
         if (c.want.type.isUnknown() && !c.have.type.isUnknown()) {
             c.want.type.set(c.have.type);
             c.result.set(c.have.type);
@@ -226,6 +230,11 @@ class AnalyzerSolver {
         if (c.have.type.isUnknown() && !c.want.type.isUnknown()) {
             c.have.type.set(c.want.type);
             c.result.set(c.want.type);
+            return true;
+        }
+
+        if (c.want.type.eq(c.have.type)) {
+            c.result.set(c.have.type);
             return true;
         }
 
@@ -249,11 +258,24 @@ class AnalyzerSolver {
     }
 
     public function iter(overwriteDependants: Bool = false): Bool {
+        trace('--- ITER ---');
+
         var removalQueue: Array<AnalyzerConstraint> = [];
+        var skipIds: Map<Int, Bool> = [];
 
         for (c in pendingConstraints) {
+            if (skipIds[c.have.type.id] != null || skipIds[c.want.type.id] != null) {
+                continue;
+            }
+
+            trace('UNIFY: $c');
             if (unify(c)) {
-                pendingConstraints.push(c);
+                trace('     - OK: $c');
+
+                removalQueue.push(c);
+                skipIds.set(c.want.type.id, true);
+                skipIds.set(c.have.type.id, true);
+                skipIds.set(c.result.id, true);
             }
         }
 
@@ -267,8 +289,8 @@ class AnalyzerSolver {
     public function solve(): Bool {
         while (iter()) {}
 
-        for (c in allConstraints) {
-            trace(c);
+        for (c in pendingConstraints) {
+            trace('FAILED: $c');
         }
 
         return pendingConstraints.length == 0;

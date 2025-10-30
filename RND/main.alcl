@@ -1,7 +1,7 @@
-func foo() {
-    return 3 + 3.5;
+func sum(x: i32, y): i32 {
+    return x + y;
 }
 
 func main() {
-    return foo();
+    sum(5.5, 10.5);
 }

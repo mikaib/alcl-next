@@ -52,7 +52,7 @@ class GeneratorContext {
                 continue;
             }
 
-            var retType = func.returnType.toCTypeString();
+            var retType = func.returnType.isUnknown() ? 'void' : func.returnType.toCTypeString();
             var params = func.parameters.map(p -> p.type.toCTypeString() + ' ' + p.name).join(', ');
             buf.println(retType + ' ' + func.remappedName + '(' + params + ');');
         }

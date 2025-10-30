@@ -32,7 +32,7 @@ class FunctionCallPath extends ParserPath {
 
         var info = getCurrentInfo();
         var node: Node = {
-            kind: FunctionCall(name.value, name.value, AnalyzerType.TDependant),
+            kind: FunctionCall(name.value, name.value, AnalyzerType.TUnknown),
             info: info,
             children: args
         };

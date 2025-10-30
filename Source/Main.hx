@@ -53,7 +53,8 @@ class Main {
         });
 
         // ensure main module is loaded
-        context.main();
+        var mainModule = context.main();
+        Sys.println(mainModule.typedAst.toString());
 
         // log warnings
         for (v in context.warnings) {
